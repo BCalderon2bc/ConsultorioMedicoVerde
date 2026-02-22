@@ -1,0 +1,152 @@
+﻿@model IEnumerable<ConsultorioVerde.Web.Models.PacienteViewModel>
+
+@{
+    ViewData["Title"] = "Gestión de Pacientes";
+}
+
+<style>
+    .text-verde {
+        color: #208b3a;
+    }
+
+    .btn-verde {
+        background-color: #208b3a;
+        color: white;
+    }
+
+        .btn-verde:hover {
+            background-color: #1a7431;
+            color: white;
+        }
+
+    .ocultar-paciente {
+        display: none !important;
+    }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-verde fw-bold"><i class="bi bi-people-fill me-2"></i>Pacientes</h2>
+
+    <div class="d-flex align-items-center border p-2 rounded bg-light shadow-sm">
+        <div class="form-check form-switch me-3">
+            <input class="form-check-input border-success" type="checkbox" role="switch" id="filtrarActivos" onchange="ejecutarFiltro(this)">
+            <label class="form-check-label fw-bold text-success" for="filtrarActivos" id="labelFiltro">
+                activos
+            </label>
+        </div>
+        <a asp-action="Crear" class="btn btn-verde shadow-sm">
+            <i class="bi bi-plus-lg"></i> Nuevo Paciente
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Paciente</th>
+                    <th>Identificación</th>
+                    <th>Teléfono</th>
+                    <th class="text-center">Estado</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr class="paciente-fila" data-estado="@(item.Activo == true ? "activo" : "inactivo")">
+                        <td>
+                            <div class="fw-bold">@item.NombreCompleto</div>
+                            <small class="text-muted">@item.Correo</small>
+                        </td>
+                        <td>@(string.IsNullOrEmpty(item.Identificacion) ? "Sin registro" : item.Identificacion)</td>
+                        <td>@item.Telefono</td>
+                        <td class="text-center">
+                            @if (item.Activo == true)
+                            {
+                                <span class="badge rounded-pill bg-success">Activo</span>
+                            }
+                            else
+                            {
+                                <span class="badge rounded-pill bg-danger">Inactivo</span>
+                            }
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-group">
+                                <a asp-action="Editar" asp-route-id="@item.IdPaciente" class="btn btn-sm btn-outline-primary" title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-danger" title="Desactivar"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#deleteModal"
+                                        onclick="llenarDatosModal('@item.IdPaciente', '@item.NombreCompleto')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@* Modal de Confirmación *@
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="bi bi-exclamation-triangle me-2"></i>Confirmar Eliminación</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-4">
+                <p class="fs-5">¿Estás seguro de que deseas desactivar al paciente?</p>
+                <h4 id="nombrePacienteEliminar" class="text-verde fw-bold"></h4>
+                <p class="text-muted small mt-3">Esta acción cambiará el estado del paciente a "Inactivo".</p>
+            </div>
+            <div class="modal-footer border-0 justify-content-center">
+                <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancelar</button>
+                <form asp-action="EliminarLogico" method="post">
+                    <input type="hidden" name="id" id="idPacienteEliminar" />
+                    <button type="submit" class="btn btn-danger px-4">Confirmar y Desactivar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Cambiamos el nombre para que sea solo para llenar datos
+        function llenarDatosModal(id, nombre) {
+            console.log("Cargando datos en modal para: " + nombre);
+
+            const inputId = document.getElementById('idPacienteEliminar');
+            const labelNombre = document.getElementById('nombrePacienteEliminar');
+
+            if (inputId && labelNombre) {
+                inputId.value = id;
+                labelNombre.innerText = nombre;
+            }
+        }
+
+        function ejecutarFiltro(checkbox) {
+            // ... (tu código de filtro que ya funciona)
+            const mostrarSoloActivos = checkbox.checked;
+            const label = document.getElementById('labelFiltro');
+            const filas = document.getElementsByClassName('paciente-fila');
+            label.innerText = mostrarSoloActivos ? "activos" : "inactivos";
+            for (let i = 0; i < filas.length; i++) {
+                const estado = filas[i].getAttribute('data-estado');
+                if (mostrarSoloActivos) {
+                    if (estado === "inactivo") filas[i].classList.add('ocultar-paciente');
+                    else filas[i].classList.remove('ocultar-paciente');
+                } else {
+                   if (estado === "activo") filas[i].classList.add('ocultar-paciente');
+                    else filas[i].classList.remove('ocultar-paciente');
+                }
+            }
+        }
+    </script>
+}

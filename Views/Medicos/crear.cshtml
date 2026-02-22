@@ -1,0 +1,135 @@
+﻿@model ConsultorioVerde.Web.Models.MedicoViewModel
+
+@{
+    ViewData["Title"] = "Nuevo Médico";
+}
+
+<style>
+    .text-verde {
+        color: #208b3a;
+    }
+
+    .btn-verde {
+        background-color: #208b3a;
+        color: white;
+    }
+
+        .btn-verde:hover {
+            background-color: #1a7431;
+            color: white;
+        }
+
+    .border-verde {
+        border-color: #208b3a !important;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h3 class="text-verde fw-bold mb-0">
+                        <i class="bi bi-person-plus-fill me-2"></i>Registrar Nuevo Médico
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Crear" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Nombre" class="form-label fw-bold text-success">Nombre</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-verde text-success"><i class="bi bi-person"></i></span>
+                                    <input asp-for="Nombre" class="form-control border-verde" placeholder="Ej: Carlos" />
+                                </div>
+                                <span asp-validation-for="Nombre" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Apellido" class="form-label fw-bold text-success">Apellido</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-verde text-success"><i class="bi bi-person"></i></span>
+                                    <input asp-for="Apellido" class="form-control border-verde" placeholder="Ej: Pérez" />
+                                </div>
+                                <span asp-validation-for="Apellido" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Especialidad" class="form-label fw-bold text-success">Especialidad</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-verde text-success"><i class="bi bi-stethoscope"></i></span>
+                                    <input asp-for="Especialidad" class="form-control border-verde" placeholder="Ej: Pediatría" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="NumeroRegistroMINSA" class="form-label fw-bold text-success">Registro MINSA</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-verde text-success"><i class="bi bi-card-checklist"></i></span>
+                                    <input asp-for="NumeroRegistroMINSA" class="form-control border-verde" placeholder="Código sanitario" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Telefono" class="form-label fw-bold text-success">Teléfono</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-verde text-success"><i class="bi bi-telephone"></i></span>
+                                    <input asp-for="Telefono" class="form-control border-verde" placeholder="0000-0000" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Correo" class="form-label fw-bold text-success">Correo Electrónico</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-verde text-success"><i class="bi bi-envelope"></i></span>
+                                    <input asp-for="Correo" class="form-control border-verde" placeholder="doctor@ejemplo.com" />
+                                </div>
+                                <span asp-validation-for="Correo" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a asp-action="Index" class="btn btn-outline-secondary px-4">
+                                <i class="bi bi-arrow-left me-2"></i>Regresar
+                            </a>
+                            <form asp-action="Crear" method="post">
+                                <div class="mt-4">
+                                    <button type="submit" class="btn btn-verde px-5 shadow-sm">
+                                        <i class="bi bi-save me-2"></i>Guardar Médico
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+        // Si existe un mensaje en TempData, mostrar el SweetAlert
+            document.addEventListener("DOMContentLoaded", function() {
+                var mensaje = '@TempData["MensajeExito"]';
+                if (mensaje) {
+                    Swal.fire({
+                        title: '¡Registro Exitoso!',
+                        text: mensaje,
+                        icon: 'success',
+                        confirmButtonColor: '#208b3a', // Tu verde corporativo
+                        confirmButtonText: 'Aceptar'
+                    });
+                }
+            });
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+
+
+    }
+}
