@@ -36,10 +36,31 @@ namespace ConsultorioVerde.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Aquí llamarías a tu servicio para POST (puedes implementarlo luego)
-                // bool guardado = await _pacienteService.CrearPacienteAsync(paciente);
+                try
+                {
+                    // Preparación del objeto según el JSON del CURL
+                    paciente.IdPaciente = 0;
+                    paciente.Activo = true;
 
-                return RedirectToAction(nameof(Index));
+                    DateTime ahora = DateTime.Now;
+                    paciente.FechaCreacion = ahora;
+                    paciente.FechaModificacion = ahora;
+                    paciente.UsuarioCreacion = "WebUser";
+                    paciente.UsuarioModificacion = "WebUser";
+
+                    // Enviamos a la API
+                    var respuesta = await _apiProxy.SendRequestAsync<object>("Paciente", "InsertarPaciente", HttpMethod.Post, paciente);
+
+                    if (respuesta != null)
+                    {
+                        TempData["MensajeExito"] = $"Paciente {paciente.NombreCompleto} registrado correctamente.";
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Error al conectar con la API: " + ex.Message);
+                }
             }
             return View(paciente);
         }
@@ -47,67 +68,79 @@ namespace ConsultorioVerde.Web.Controllers
         // GET: Pacientes/Editar/5
         public async Task<IActionResult> Editar(int id)
         {
-            // Usamos el Proxy para obtener la lista y buscamos al paciente por ID
-            // O si tu API tiene un método "ObtenerPaciente", úsalo.
+            // Buscamos al paciente. Nota: Usamos el listar y filtramos por ID
             var pacientes = await _apiProxy.SendRequestAsync<List<PacienteViewModel>>("Paciente", "ListarPaciente", HttpMethod.Post);
-            var paciente = pacientes.FirstOrDefault(p => p.IdPaciente == id);
+            var paciente = pacientes?.FirstOrDefault(p => p.IdPaciente == id);
 
-            if (paciente == null)
-            {
-                return NotFound();
-            }
+            if (paciente == null) return NotFound();
 
             return View(paciente);
         }
 
-        // POST: Pacientes/Editar/5
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Editar(PacienteViewModel paciente)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    // Aquí mandas a llamar a tu método de actualizar en la API
-                    await _apiProxy.SendRequestAsync<bool>("Paciente", "ActualizarPaciente", HttpMethod.Post, paciente);
-                    return RedirectToAction(nameof(Index));
+                    // Actualizamos datos de auditoría
+                    paciente.FechaModificacion = DateTime.Now;
+                    paciente.UsuarioModificacion = "WebUser";
+
+                    // Importante: Tu API usa PUT según el curl
+                    var respuesta = await _apiProxy.SendRequestAsync<object>("Paciente", "ActualizarPaciente", HttpMethod.Put, paciente);
+
+                    if (respuesta != null)
+                    {
+                        TempData["MensajeExito"] = $"El paciente {paciente.Nombre} {paciente.Apellido} ha sido actualizado.";
+                        return RedirectToAction(nameof(Index));
+                    }
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", "No se pudo actualizar: " + ex.Message);
+                    ModelState.AddModelError("", "Error al actualizar el paciente: " + ex.Message);
                 }
             }
             return View(paciente);
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> EliminarLogico(int id)
         {
             try
             {
-                // 1. Obtener los datos actuales del paciente
+                // 1. Obtenemos la lista para encontrar al paciente por ID
+                // Nota: Si tienes un endpoint 'ObtenerPacientePorId', sería más eficiente usar ese.
                 var pacientes = await _apiProxy.SendRequestAsync<List<PacienteViewModel>>("Paciente", "ListarPaciente", HttpMethod.Post);
-                var paciente = pacientes.FirstOrDefault(p => p.IdPaciente == id);
+                var paciente = pacientes?.FirstOrDefault(p => p.IdPaciente == id);
 
                 if (paciente != null)
                 {
-                    // 2. Cambiar estado a inactivo
+                    // 2. Modificamos el estado y la auditoría
                     paciente.Activo = false;
                     paciente.FechaModificacion = DateTime.Now;
-                    paciente.UsuarioModificacion = "Sistema"; // O el usuario logueado
+                    paciente.UsuarioModificacion = "WebUser";
 
-                    // 3. Enviar actualización a la API
-                    await _apiProxy.SendRequestAsync<bool>("Paciente", "ActualizarPaciente", HttpMethod.Post, paciente);
+                    // 3. Enviamos la actualización mediante PUT
+                    var respuesta = await _apiProxy.SendRequestAsync<object>("Paciente", "ActualizarEstadoPaciente", HttpMethod.Put, paciente);
+
+                    if (respuesta != null)
+                    {
+                        TempData["MensajeExito"] = $"El paciente {paciente.NombreCompleto} ha sido desactivado.";
+                    }
                 }
-
-                return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                // Puedes manejar el error aquí (ej. TempData["Error"] = "...")
-                return RedirectToAction(nameof(Index));
+                TempData["MensajeError"] = "Error al intentar desactivar el registro: " + ex.Message;
             }
+
+            return RedirectToAction(nameof(Index));
         }
+
 
 
 

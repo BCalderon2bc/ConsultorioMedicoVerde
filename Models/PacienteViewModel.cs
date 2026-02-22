@@ -11,7 +11,7 @@ namespace ConsultorioVerde.Web.Models
 
         [Required(ErrorMessage = "El nombre es obligatorio")]
         [StringLength(100)]
-        [JsonPropertyName("nombre")]
+        [JsonPropertyName("nombre")]                                            
         public string Nombre { get; set; }
 
         [Required(ErrorMessage = "El apellido es obligatorio")]

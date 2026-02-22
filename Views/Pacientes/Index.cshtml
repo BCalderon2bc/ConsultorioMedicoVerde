@@ -29,7 +29,7 @@
 
     <div class="d-flex align-items-center border p-2 rounded bg-light shadow-sm">
         <div class="form-check form-switch me-3">
-            <input class="form-check-input border-success" type="checkbox" role="switch" id="filtrarActivos" onchange="ejecutarFiltro(this)">
+            <input class="form-check-input border-success" type="checkbox" role="switch" id="filtrarActivos" onchange="ejecutarFiltro(this)" checked>
             <label class="form-check-label fw-bold text-success" for="filtrarActivos" id="labelFiltro">
                 activos
             </label>
@@ -92,21 +92,22 @@
     </div>
 </div>
 
-@* Modal de Confirmación *@
+@* Modal de Confirmación para Pacientes *@
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
             <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title"><i class="bi bi-exclamation-triangle me-2"></i>Confirmar Eliminación</h5>
+                <h5 class="modal-title"><i class="bi bi-exclamation-triangle me-2"></i>Desactivar Paciente</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-center p-4">
-                <p class="fs-5">¿Estás seguro de que deseas desactivar al paciente?</p>
+                <p class="fs-5">¿Estás seguro de que deseas cambiar el estado a inactivo?</p>
                 <h4 id="nombrePacienteEliminar" class="text-verde fw-bold"></h4>
-                <p class="text-muted small mt-3">Esta acción cambiará el estado del paciente a "Inactivo".</p>
             </div>
             <div class="modal-footer border-0 justify-content-center">
                 <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancelar</button>
+
+                @* FORMULARIO QUE ACTIVA EL POST AL CONTROLADOR *@
                 <form asp-action="EliminarLogico" method="post">
                     <input type="hidden" name="id" id="idPacienteEliminar" />
                     <button type="submit" class="btn btn-danger px-4">Confirmar y Desactivar</button>
@@ -118,13 +119,10 @@
 
 @section Scripts {
     <script>
-        // Cambiamos el nombre para que sea solo para llenar datos
-        function llenarDatosModal(id, nombre) {
-            console.log("Cargando datos en modal para: " + nombre);
 
+        function llenarDatosModal(id, nombre) {
             const inputId = document.getElementById('idPacienteEliminar');
             const labelNombre = document.getElementById('nombrePacienteEliminar');
-
             if (inputId && labelNombre) {
                 inputId.value = id;
                 labelNombre.innerText = nombre;
@@ -132,21 +130,30 @@
         }
 
         function ejecutarFiltro(checkbox) {
-            // ... (tu código de filtro que ya funciona)
             const mostrarSoloActivos = checkbox.checked;
             const label = document.getElementById('labelFiltro');
             const filas = document.getElementsByClassName('paciente-fila');
+
             label.innerText = mostrarSoloActivos ? "activos" : "inactivos";
+
             for (let i = 0; i < filas.length; i++) {
                 const estado = filas[i].getAttribute('data-estado');
                 if (mostrarSoloActivos) {
                     if (estado === "inactivo") filas[i].classList.add('ocultar-paciente');
                     else filas[i].classList.remove('ocultar-paciente');
                 } else {
-                   if (estado === "activo") filas[i].classList.add('ocultar-paciente');
+                    if (estado === "activo") filas[i].classList.add('ocultar-paciente');
                     else filas[i].classList.remove('ocultar-paciente');
                 }
             }
         }
+
+        // --- NUEVO: EJECUTAR AL CARGAR LA PÁGINA ---
+        document.addEventListener("DOMContentLoaded", function() {
+            const switchFiltro = document.getElementById('filtrarActivos');
+            // Llamamos a la función manualmente para que aplique el filtro inicial
+            ejecutarFiltro(switchFiltro);
+        });
+
     </script>
 }

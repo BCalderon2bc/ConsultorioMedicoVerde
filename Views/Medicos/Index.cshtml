@@ -29,8 +29,7 @@
 
     <div class="d-flex align-items-center border p-2 rounded bg-light shadow-sm">
         <div class="form-check form-switch me-3">
-            <input class="form-check-input border-success" type="checkbox" role="switch" id="filtrarActivos" onchange="ejecutarFiltro(this)">
-            <label class="form-check-label fw-bold text-success" for="filtrarActivos" id="labelFiltro">
+            <input class="form-check-input border-success" type="checkbox" role="switch" id="filtrarActivos" onchange="ejecutarFiltro(this)" checked>            <label class="form-check-label fw-bold text-success" for="filtrarActivos" id="labelFiltro">
                 activos
             </label>
         </div>
@@ -121,6 +120,7 @@
 @section Scripts {
 
     <script>
+
         function llenarDatosModal(id, nombre) {
             const inputId = document.getElementById('idMedicoEliminar');
             const labelNombre = document.getElementById('nombreMedicoEliminar');
@@ -149,5 +149,14 @@
                 }
             }
         }
+
+        // Ejecutar al cargar la página para aplicar el filtro inicial (Activos)
+        document.addEventListener("DOMContentLoaded", function() {
+            const switchFiltro = document.getElementById('filtrarActivos');
+            if (switchFiltro) {
+                ejecutarFiltro(switchFiltro);
+            }
+        });
+
     </script>
 }
