@@ -1,43 +1,61 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ConsultorioVerde.Web.Models;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
-namespace ConsultorioVerde.Web.Controllers
+public class AccountController : Controller
 {
-    public class AccountController : Controller
+    private readonly ApiServiceProxy _apiProxy;
+
+    // Inyectamos el servicio en el constructor
+    public AccountController(ApiServiceProxy apiService)
     {
-        private readonly IHttpClientFactory _httpClientFactory;
+        _apiProxy = apiService;
+    }
 
-        public AccountController(IHttpClientFactory httpClientFactory) 
+    [HttpGet]
+    public IActionResult Login() => View();
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Login(LoginViewModel model)
+    {
+        if (!ModelState.IsValid) return View(model);
+
+        try
         {
-            _httpClientFactory = httpClientFactory;
-        }
+            // Enviamos el objeto con "usuario" y "contrasena" como pide tu curl
+            var usuarioValido = await _apiProxy.SendRequestAsync<UsuarioViewModel>(
+                "Usuario", "ValidarLogin", HttpMethod.Post, model);
 
-        [HttpGet]
-        public IActionResult Login() => View();
-
-        [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel model)
-        {
-            if (!ModelState.IsValid) return View(model);
-
-            // COMENTADO TEMPORALMENTE PARA AVANZAR EN EL DISEÑO
-            /*
-            var client = _httpClientFactory.CreateClient("ConsultorioAPI");
-            var loginData = new { Username = model.Email, Password = model.Password };
-            var content = new StringContent(JsonSerializer.Serialize(loginData), Encoding.UTF8, "application/json");
-            var response = await client.PostAsync("auth/login", content);
-
-            if (response.IsSuccessStatusCode) { ... }
-            */
-
-            // SIMULACIÓN DE LOGIN EXITOSO:
-            if (model.Email == "admin" && model.Password == "123") // Solo para tus pruebas locales
+            if (usuarioValido != null && usuarioValido.Usuario != null)
             {
+                var claims = new List<Claim>
+                { 
+                    new Claim(ClaimTypes.Name, usuarioValido.Usuario),
+                    new Claim(ClaimTypes.Role, usuarioValido.Rol), // <--- AQUÍ GUARDAS EL ROL
+                    new Claim("IdUsuario", usuarioValido.IdUsuario.ToString())
+                };
+
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+
                 return RedirectToAction("Index", "Home");
             }
 
-            ModelState.AddModelError(string.Empty, "Usuario o contraseña incorrectos.");
-            return View(model);
+            ModelState.AddModelError("", "Usuario o contraseña incorrectos.");
         }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError("", "Error de conexión: " + ex.Message);
+        }
+
+        return View(model);
+    }
+
+    public async Task<IActionResult> Logout()
+    {
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        return RedirectToAction("Login");
     }
 }

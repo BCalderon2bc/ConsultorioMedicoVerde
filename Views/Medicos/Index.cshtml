@@ -29,7 +29,8 @@
 
     <div class="d-flex align-items-center border p-2 rounded bg-light shadow-sm">
         <div class="form-check form-switch me-3">
-            <input class="form-check-input border-success" type="checkbox" role="switch" id="filtrarActivos" onchange="ejecutarFiltro(this)" checked>            <label class="form-check-label fw-bold text-success" for="filtrarActivos" id="labelFiltro">
+            <input class="form-check-input border-success" type="checkbox" role="switch" id="filtrarActivos" onchange="ejecutarFiltro(this)" checked>
+            <label class="form-check-label fw-bold text-success" for="filtrarActivos" id="labelFiltro">
                 activos
             </label>
         </div>
@@ -74,15 +75,17 @@
                             }
                         </td>
                         <td class="text-center">
-                            <div class="btn-group">
+                            <div class="btn-group shadow-sm">
                                 <a asp-action="Editar" asp-route-id="@item.IdMedico" class="btn btn-sm btn-outline-primary" title="Editar">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <button type="button" class="btn btn-sm btn-outline-danger" title="Desactivar"
+                                <button type="button"
+                                        class="btn btn-sm @(item.Activo ? "btn-outline-danger" : "btn-outline-success")"
+                                        title="@(item.Activo ? "Desactivar" : "Activar")"
                                         data-bs-toggle="modal"
                                         data-bs-target="#deleteModal"
-                                        onclick="llenarDatosModal('@item.IdMedico', '@item.NombreCompleto')">
-                                    <i class="bi bi-trash"></i>
+                                        onclick="llenarDatosModal('@item.IdMedico', '@item.NombreCompleto', @(item.Activo ? "true" : "false"))">
+                                    <i class="bi @(item.Activo ? "bi-trash" : "bi-check-circle")"></i>
                                 </button>
                             </div>
                         </td>
@@ -93,41 +96,63 @@
     </div>
 </div>
 
-@* Modal de Confirmación *@
+@* Modal de Acción Dinámico *@
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title"><i class="bi bi-exclamation-triangle me-2"></i>Confirmar Eliminación</h5>
+            <div id="modalHeaderColor" class="modal-header text-white">
+                <h5 class="modal-title" id="modalTitulo">Confirmar Acción</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-center p-4">
-                <p class="fs-5">¿Estás seguro de que deseas desactivar al médico?</p>
+                <p class="fs-5" id="modalMensaje"></p>
                 <h4 id="nombreMedicoEliminar" class="text-verde fw-bold"></h4>
-                <p class="text-muted small mt-3">Esta acción cambiará el estado del médico a "Inactivo".</p>
+                <p id="modalSubtexto" class="text-muted small mt-3"></p>
             </div>
             <div class="modal-footer border-0 justify-content-center">
                 <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancelar</button>
+                @* Dentro del form del Modal *@
                 <form asp-action="EliminarLogico" method="post">
                     <input type="hidden" name="id" id="idMedicoEliminar" />
-                    <button type="submit" class="btn btn-danger px-4">Confirmar y Desactivar</button>
+                    <input type="hidden" name="activo" id="estadoMedicoActualizar" /> @* <-- NUEVO *@
+                    <button type="submit" id="btnConfirmarModal" class="btn px-4">Confirmar</button>
                 </form>
             </div>
-        </div>
+        </div>  
     </div>
 </div>
 
 @section Scripts {
-
     <script>
-
-        function llenarDatosModal(id, nombre) {
+        function llenarDatosModal(id, nombre, estaActivo) {
             const inputId = document.getElementById('idMedicoEliminar');
+            const inputEstado = document.getElementById('estadoMedicoActualizar'); // El nuevo input
             const labelNombre = document.getElementById('nombreMedicoEliminar');
+            const titulo = document.getElementById('modalTitulo');
+            const header = document.getElementById('modalHeaderColor');
+            const btnConfirmar = document.getElementById('btnConfirmarModal');
 
-            if (inputId && labelNombre) {
+            if (inputId && inputEstado) {
                 inputId.value = id;
                 labelNombre.innerText = nombre;
+
+                if (estaActivo) {
+                    // Si está activo, queremos desactivarlo (enviar false)
+                    inputEstado.value = false;
+
+                    titulo.innerHTML = '<i class="bi bi-person-x-fill me-2"></i>Desactivar Médico';
+                    header.className = "modal-header bg-danger text-white";
+                    btnConfirmar.className = "btn btn-danger px-4";
+                    btnConfirmar.innerText = "Confirmar y Desactivar";
+                } else {
+                    // Si está inactivo, queremos activarlo (enviar true)
+                    inputEstado.value = true;
+
+                    titulo.innerHTML = '<i class="bi bi-person-check-fill me-2"></i>Reactivar Médico';
+                    header.className = "modal-header bg-success text-white";
+                    btnConfirmar.className = "btn btn-success px-4";
+                    btnConfirmar.innerText = "Confirmar y Activar";
+                }
             }
         }
 
@@ -149,14 +174,11 @@
                 }
             }
         }
+        
 
-        // Ejecutar al cargar la página para aplicar el filtro inicial (Activos)
         document.addEventListener("DOMContentLoaded", function() {
             const switchFiltro = document.getElementById('filtrarActivos');
-            if (switchFiltro) {
-                ejecutarFiltro(switchFiltro);
-            }
+            if (switchFiltro) ejecutarFiltro(switchFiltro);
         });
-
     </script>
 }

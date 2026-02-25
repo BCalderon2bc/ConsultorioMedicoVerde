@@ -115,7 +115,7 @@ namespace ConsultorioVerde.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EliminarLogico(int id)
+        public async Task<IActionResult> EliminarLogico(int id, bool activo)
         {
             try
             {
@@ -126,7 +126,7 @@ namespace ConsultorioVerde.Web.Controllers
                 if (medico != null)
                 {
                     // 2. Cambiamos solo el estado y la auditoría
-                    medico.Activo = false;
+                    medico.Activo = activo;
                     medico.FechaModificacion = DateTime.Now;
                     medico.UsuarioModificacion = "WebUser";
 

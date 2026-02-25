@@ -1,18 +1,27 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ConsultorioVerde.Web.Models
+public class LoginViewModel
 {
-    public class LoginViewModel
-    {
-        [Required(ErrorMessage = "El correo o usuario es obligatorio")]
-        [Display(Name = "Usuario")]
-        public string Email { get; set; }
+    [Required(ErrorMessage = "El usuario es obligatorio")]
+    public string Usuario { get; set; }
 
-        [Required(ErrorMessage = "La contraseña es obligatoria")]
-        [DataType(DataType.Password)]
-        [Display(Name = "Contraseña")]
-        public string Password { get; set; }
+    [Required(ErrorMessage = "La contraseña es obligatoria")]
+    [DataType(DataType.Password)]
+    public string Contrasena { get; set; }
 
-        public bool RememberMe { get; set; }
-    }
+    public string Rol { get; set; } = "";
+    public int? IdMedico { get; set; } = 0;
+}
+
+public class UsuarioViewModel
+{   
+
+    public string Usuario { get; set; }
+    public string Contrasena { get; set; }
+    public bool Exito { get; set; }
+    public int IdUsuario { get; set; }
+    public string NombreUsuario { get; set; }
+    public string Rol { get; set; }
+    public int? IdMedico { get; set; }
+    public bool Activo { get; set; }
 }

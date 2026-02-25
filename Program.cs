@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -11,14 +13,33 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddHttpClient<ApiServiceProxy>();
 
-//builder.Services.AddHttpClient("ConsultorioAPI", client =>
-//{
+// 1. Agregar el servicio de Autenticación por Cookies
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login"; // Ruta a tu login si no está logueado
+        options.AccessDeniedPath = "/Account/AccessDenied"; // Ruta si no tiene el Rol necesario
+        options.ExpireTimeSpan = TimeSpan.FromHours(8); // Cuánto dura la sesión
+    });
 
-//    client.BaseAddress = new Uri("https://localhost:7000/api/");  
-//});
+// Asegúrate de agregar controladores con vistas
+builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
+// ... otros middlewares (static files, etc)
+
+app.UseRouting();
+
+// ESTAS DOS LÍNEAS SON LAS QUE TE FALTAN:
+app.UseAuthentication(); // ¿Quién eres?
+app.UseAuthorization();  // ¿Qué tienes permiso de hacer?
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Account}/{action=Login}/{id?}"); // Cambiado de Home a Account
+
+app.Run();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
