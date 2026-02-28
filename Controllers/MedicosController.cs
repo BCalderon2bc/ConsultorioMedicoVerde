@@ -12,12 +12,40 @@ namespace ConsultorioVerde.Web.Controllers
         {
             _apiProxy = apiProxy;
         }
-
-        public async Task<IActionResult> Index()
+        [HttpGet]
+        public async Task<IActionResult> Index(string buscar, string filtro)
         {
-            // Llamada al endpoint que me pasaste
-            var medicos = await _apiProxy.SendRequestAsync<List<MedicoViewModel>>("Medico", "ListarMedico", HttpMethod.Post);
-            return View(medicos ?? new List<MedicoViewModel>());
+            // Estado inicial: No cargamos nada si el usuario acaba de entrar
+            //if (filtro == null)
+            //{
+            //    return View(new List<MedicoViewModel>());
+            //}
+
+            // Preparar objeto para el API (basado en el curl que pasaste)
+            var busqueda = new MedicoViewModel {
+                IdMedico = 0,
+                Nombre = "",
+                Apellido = "",
+                FechaCreacion = DateTime.Now,
+                FechaModificacion = DateTime.Now,
+
+            };
+
+            if (!string.IsNullOrEmpty(buscar))
+            {
+                if (filtro == "Nombre")
+                    busqueda.Nombre = buscar;
+                else if (filtro == "Apellido")
+                    busqueda.Apellido = buscar;
+            }
+            // Consumir el API de ListarMedico
+            var lista = await _apiProxy.SendRequestAsync<List<MedicoViewModel>>("Medico", "ListarMedico", HttpMethod.Post, busqueda);
+
+            // Persistencia para la vista
+            ViewBag.Buscar = buscar;
+            ViewBag.Filtro = filtro;
+
+            return View(lista ?? new List<MedicoViewModel>());
         }
 
         // 1. GET: Muestra el formulario en blanco

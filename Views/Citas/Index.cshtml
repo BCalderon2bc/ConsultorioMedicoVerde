@@ -51,6 +51,13 @@
                             <div class="btn-group">
                                 <a asp-action="Editar" asp-route-id="@item.IdCita" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
                                 <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                @if (User.IsInRole("Medico") || User.IsInRole("Admin"))
+                                {
+                                    <a asp-action="Editar" asp-route-id="@item.IdCita" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+
+                                }
+
+
                             </div>
                         </td>
                     </tr>

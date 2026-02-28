@@ -1,7 +1,6 @@
-﻿@model IEnumerable<ConsultorioVerde.Web.Models.MedicoViewModel>
-
+﻿@model List<UsuarioViewModel>
 @{
-    ViewData["Title"] = "Gestión de Médicos";
+    ViewData["Title"] = "Gestión de Usuarios";
 }
 
 <style>
@@ -19,15 +18,15 @@
             color: white;
         }
 
-    .ocultar-medico {
+    .ocultar-usuario {
         display: none !important;
     }
 </style>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="text-verde fw-bold"><i class="bi bi-person-badge-fill me-2"></i>Médicos</h2>
+    <h2 class="text-verde fw-bold"><i class="bi bi-shield-lock-fill me-2"></i>Usuarios</h2>
     <a asp-action="Crear" class="btn btn-verde shadow-sm">
-        <i class="bi bi-plus-lg"></i> Nuevo Médico
+        <i class="bi bi-plus-lg"></i> Nuevo Usuario
     </a>
 </div>
 
@@ -37,13 +36,12 @@
             <div class="col-md-3">
                 <label class="form-label fw-bold text-muted small">FILTRAR POR:</label>
                 <select name="filtro" class="form-select border-success-subtle">
-                    <!option value="Nombre" @(ViewBag.Filtro == "Nombre" ? "selected" : "")>Nombre</!option>
-                    <!option value="Apellido" @(ViewBag.Filtro == "Apellido" ? "selected" : "")>Apellido</!option>
-               
+                    <option value="Nombre" selected="@(ViewBag.Filtro == "Nombre")">Nombre de Usuario</option>
+                    <option value="Rol" selected="@(ViewBag.Filtro == "Rol")">Rol del Sistema</option>
                 </select>
             </div>
             <div class="col-md-6">
-                <label class="form-label fw-bold text-muted small">BUSCAR MÉDICO:</label>
+                <label class="form-label fw-bold text-muted small">BUSCAR USUARIO:</label>
                 <div class="input-group">
                     <span class="input-group-text bg-white"><i class="bi bi-search text-success"></i></span>
                     <input type="text" name="buscar" class="form-control border-start-0"
@@ -55,8 +53,6 @@
                     <i class="bi bi-funnel-fill me-1"></i> Filtrar
                 </button>
             </div>
-            <input type="hidden" name="buscarActual" id="buscarActual" />
-            <input type="hidden" name="filtroActual" id="filtroActual" />
         </form>
     </div>
 </div>
@@ -66,8 +62,12 @@
     <div class="d-flex justify-content-end mb-3">
         <div class="d-flex align-items-center border p-2 rounded bg-white shadow-sm">
             <div class="form-check form-switch">
-                <input class="form-check-input border-success" type="checkbox" role="switch" id="filtrarActivos" onchange="ejecutarFiltro(this)" checked>
-                <label class="form-check-label fw-bold text-success" for="filtrarActivos" id="labelFiltro">activos</label>
+                @* Sincronizamos el estado del switch con el ViewBag enviado desde el controlador *@
+                <input class="form-check-input border-success" type="checkbox" role="switch" id="filtrarActivos"
+                       onchange="ejecutarFiltro(this)" @(ViewBag.MostrarActivos != false ? "checked" : "")>
+                <label class="form-check-label fw-bold text-success" for="filtrarActivos" id="labelFiltro">
+                    @(ViewBag.MostrarActivos != false ? "activos" : "inactivos")
+                </label>
             </div>
         </div>
     </div>
@@ -78,10 +78,9 @@
         <table class="table table-hover align-middle mb-0">
             <thead class="table-light">
                 <tr>
-                    <th>Médico</th>
-                    <th>Especialidad</th>
-                    <th>Registro MINSA</th>
-                    <th>Teléfono</th>
+                    <th>Usuario</th>
+                    <th>Rol</th>
+                    <th>Vínculo Médico</th>
                     <th class="text-center">Estado</th>
                     <th class="text-center">Acciones</th>
                 </tr>
@@ -91,27 +90,37 @@
                 {
                     @foreach (var item in Model)
                     {
-                        <tr class="medico-fila" data-estado="@(item.Activo ? "activo" : "inactivo")">
+                        <tr class="usuario-fila" data-estado="@(item.Activo ? "activo" : "inactivo")">
                             <td>
-                                <div class="fw-bold">@item.NombreCompleto</div>
-                                <small class="text-muted">@item.Correo</small>
+                                <div class="fw-bold"><i class="bi bi-person-circle me-2 text-secondary"></i>@item.NombreUsuario</div>
+                                <small class="text-muted">Última mod: @(item.FechaModificacion?.ToString("dd/MM/yyyy") ?? "N/A")</small>
                             </td>
-                            <td>@item.Especialidad</td>
-                            <td><span class="badge bg-light text-dark border">@item.NumeroRegistroMINSA</span></td>
-                            <td>@item.Telefono</td>
-                            <td class="text-center">
-                                @if (item.Activo)
+                            <td>
+                                <span class="badge @(item.Rol == "Admin" ? "bg-dark" : item.Rol == "Medico" ? "bg-primary" : "bg-info text-dark")">
+                                    @item.Rol
+                                </span>
+                            </td>
+                            <td>
+                                @if (item.IdMedico > 0)
                                 {
-                                    <span class="badge rounded-pill bg-success">Activo</span>
+                                    <span class="badge bg-light text-success border border-success-subtle">
+                                        <i class="bi bi-hospital me-1"></i> ID Med: @item.IdMedico
+                                    </span>
                                 }
                                 else
                                 {
-                                    <span class="badge rounded-pill bg-danger">Inactivo</span>
+
+                                    <span class="text-muted small">N/A</span>
                                 }
                             </td>
                             <td class="text-center">
+                                <span class="badge rounded-pill @(item.Activo ? "bg-success" : "bg-danger")">
+                                    @(item.Activo ? "Activo" : "Inactivo")
+                                </span>
+                            </td>
+                            <td class="text-center">
                                 <div class="btn-group shadow-sm">
-                                    <a asp-action="Editar" asp-route-id="@item.IdMedico" class="btn btn-sm btn-outline-primary" title="Editar">
+                                    <a asp-action="Editar" asp-route-id="@item.IdUsuario" class="btn btn-sm btn-outline-primary" title="Editar">
                                         <i class="bi bi-pencil"></i>
                                     </a>
                                     <button type="button"
@@ -119,7 +128,7 @@
                                             title="@(item.Activo ? "Desactivar" : "Activar")"
                                             data-bs-toggle="modal"
                                             data-bs-target="#deleteModal"
-                                            onclick="llenarDatosModal('@item.IdMedico', '@item.NombreCompleto', @(item.Activo ? "true" : "false"))">
+                                            onclick="llenarDatosModal('@item.IdUsuario', '@item.NombreUsuario', @(item.Activo ? "true" : "false"))">
                                         <i class="bi @(item.Activo ? "bi-trash" : "bi-check-circle")"></i>
                                     </button>
                                 </div>
@@ -130,18 +139,18 @@
                 else
                 {
                     <tr>
-                        <td colspan="6" class="text-center py-5">
+                        <td colspan="5" class="text-center py-5">
                             <div class="text-muted">
                                 @if (ViewBag.Buscar == null)
                                 {
-                                    <i class="bi bi-hospital h1 d-block mb-3 text-verde opacity-50"></i>
-                                    <h5 class="fw-bold text-verde">Directorio Médico</h5>
-                                    <p>Por favor, utilice el buscador o presione <b>Filtrar</b> para cargar los médicos.</p>
+                                    <i class="bi bi-shield-lock h1 d-block mb-3 text-verde opacity-50"></i>
+                                    <h5 class="fw-bold text-verde">Gestión de Usuarios</h5>
+                                    <p>Por favor, utilice el buscador o presione <b>Filtrar</b> para cargar la lista.</p>
                                 }
                                 else
                                 {
                                     <i class="bi bi-search h1 d-block mb-3"></i>
-                                    <p class="mb-0">No se encontraron médicos que coincidan con "<b>@ViewBag.Buscar</b>".</p>
+                                    <p class="mb-0">No se encontraron usuarios que coincidan con "<b>@ViewBag.Buscar</b>".</p>
                                 }
                             </div>
                         </td>
@@ -152,6 +161,7 @@
     </div>
 </div>
 
+
 @* Modal de Acción Dinámico *@
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -160,18 +170,24 @@
                 <h5 class="modal-title" id="modalTitulo">Confirmar Acción</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body text-center p-4">
-                <p class="fs-5" id="modalMensaje">¿Está seguro de realizar esta acción para el médico?</p>
-                <h4 id="nombreMedicoEliminar" class="text-verde fw-bold"></h4>
-            </div>
-            <div class="modal-footer border-0 justify-content-center">
-                <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancelar</button>
-                <form asp-action="EliminarLogico" method="post">
-                    <input type="hidden" name="id" id="idMedicoEliminar" />
-                    <input type="hidden" name="activo" id="estadoMedicoActualizar" />
+            <form asp-action="CambiarEstado" method="post">
+                <input type="hidden" name="id" id="idUsuarioEliminar" />
+                <input type="hidden" name="activo" id="estadoUsuarioActualizar" />
+
+                @* Hiddens para persistencia de filtros y estado del switch *@
+                <input type="hidden" name="buscarActual" id="buscarActual" />
+                <input type="hidden" name="filtroActual" id="filtroActual" />
+                <input type="hidden" name="mostrarActivos" id="mostrarActivosActual" />
+
+                <div class="modal-body text-center p-4">
+                    <p class="fs-5">¿Está seguro de realizar esta acción para el usuario?</p>
+                    <h4 id="nombreUsuarioEliminar" class="text-verde fw-bold"></h4>
+                </div>
+                <div class="modal-footer border-0 justify-content-center">
+                    <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" id="btnConfirmarModal" class="btn px-4">Confirmar</button>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -179,30 +195,36 @@
 @section Scripts {
     <script>
         function llenarDatosModal(id, nombre, estaActivo) {
-            const inputId = document.getElementById('idMedicoEliminar');
-            const inputEstado = document.getElementById('estadoMedicoActualizar');
-            const labelNombre = document.getElementById('nombreMedicoEliminar');
+            const inputId = document.getElementById('idUsuarioEliminar');
+            const inputEstado = document.getElementById('estadoUsuarioActualizar');
+            const labelNombre = document.getElementById('nombreUsuarioEliminar');
             const titulo = document.getElementById('modalTitulo');
             const header = document.getElementById('modalHeaderColor');
             const btnConfirmar = document.getElementById('btnConfirmarModal');
 
-            // Captura lo que hay en los inputs de búsqueda superiores
-            document.getElementById('buscarActual').value = document.getElementsByName('buscar')[0].value;
-            document.getElementById('filtroActual').value = document.getElementsByName('filtro')[0].value;
+            // Capturar filtros actuales
+            const inputBusqueda = document.querySelector('input[name="buscar"]');
+            const selectFiltro = document.querySelector('select[name="filtro"]');
+            const switchFiltro = document.getElementById('filtrarActivos');
 
             if (inputId && inputEstado) {
                 inputId.value = id;
                 labelNombre.innerText = nombre;
 
+                // Sincronizar valores actuales para el POST
+                document.getElementById('buscarActual').value = inputBusqueda ? inputBusqueda.value : "";
+                document.getElementById('filtroActual').value = selectFiltro ? selectFiltro.value : "";
+                document.getElementById('mostrarActivosActual').value = switchFiltro ? switchFiltro.checked : true;
+
                 if (estaActivo) {
                     inputEstado.value = false;
-                    titulo.innerHTML = '<i class="bi bi-person-x-fill me-2"></i>Desactivar Médico';
+                    titulo.innerHTML = '<i class="bi bi-person-x-fill me-2"></i>Desactivar Usuario';
                     header.className = "modal-header bg-danger text-white";
                     btnConfirmar.className = "btn btn-danger px-4";
                     btnConfirmar.innerText = "Confirmar y Desactivar";
                 } else {
                     inputEstado.value = true;
-                    titulo.innerHTML = '<i class="bi bi-person-check-fill me-2"></i>Reactivar Médico';
+                    titulo.innerHTML = '<i class="bi bi-person-check-fill me-2"></i>Reactivar Usuario';
                     header.className = "modal-header bg-success text-white";
                     btnConfirmar.className = "btn btn-success px-4";
                     btnConfirmar.innerText = "Confirmar y Activar";
@@ -213,25 +235,33 @@
         function ejecutarFiltro(checkbox) {
             const mostrarSoloActivos = checkbox.checked;
             const label = document.getElementById('labelFiltro');
-            const filas = document.getElementsByClassName('medico-fila');
+            const filas = document.getElementsByClassName('usuario-fila');
 
-            if (label) label.innerText = mostrarSoloActivos ? "activos" : "inactivos";
+            if (label) {
+                label.innerText = mostrarSoloActivos ? "activos" : "inactivos";
+                label.className = "form-check-label fw-bold " + (mostrarSoloActivos ? "text-success" : "text-danger");
+            }
 
             for (let i = 0; i < filas.length; i++) {
                 const estado = filas[i].getAttribute('data-estado');
                 if (mostrarSoloActivos) {
-                    if (estado === "inactivo") filas[i].classList.add('ocultar-medico');
-                    else filas[i].classList.remove('ocultar-medico');
+                    if (estado === "inactivo") filas[i].classList.add('ocultar-usuario');
+                    else filas[i].classList.remove('ocultar-usuario');
                 } else {
-                    if (estado === "activo") filas[i].classList.add('ocultar-medico');
-                    else filas[i].classList.remove('ocultar-medico');
+                    if (estado === "activo") filas[i].classList.add('ocultar-usuario');
+                    else filas[i].classList.remove('ocultar-usuario');
                 }
             }
         }
 
         document.addEventListener("DOMContentLoaded", function() {
             const switchFiltro = document.getElementById('filtrarActivos');
+            // Ejecutamos el filtro inicial basado en el estado del switch (que persiste gracias al ViewBag)
             if (switchFiltro) ejecutarFiltro(switchFiltro);
+
+            window.setTimeout(function() {
+                $(".alert").fadeTo(500, 0).slideUp(500);
+            }, 4000);
         });
     </script>
 }

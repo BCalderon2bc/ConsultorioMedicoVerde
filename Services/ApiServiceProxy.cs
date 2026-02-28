@@ -58,4 +58,6 @@ public class ApiServiceProxy
         var errorContent = await response.Content.ReadAsStringAsync();
         throw new HttpRequestException($"Error {response.StatusCode}: {errorContent}");
     }
+
+
 }

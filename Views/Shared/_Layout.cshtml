@@ -26,52 +26,95 @@
                 color: white;
                 border-radius: 5px;
                 margin: 5px 10px;
+                transition: all 0.3s;
             }
 
                 .sidebar .nav-link:hover {
                     background-color: var(--verde-oscuro);
+                    color: white;
                 }
 
                 .sidebar .nav-link.active {
-                    background-color: white;
-                    color: var(--verde-clinica);
+                    background-color: white !important;
+                    color: var(--verde-clinica) !important;
                     font-weight: bold;
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
                 }
 
         .navbar-top {
             background-color: white;
             border-bottom: 1px solid #dee2e6;
         }
+
+        .section-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.7;
+            margin-left: 20px;
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body>
+    @{
+        var currentController = ViewContext.RouteData.Values["Controller"]?.ToString();
+    }
+
     <div class="container-fluid">
         <div class="row">
             <nav class="col-md-2 d-none d-md-block sidebar p-0 shadow">
                 <div class="text-center p-4">
-                    <img src="~/images/logo.png" style="width: 80%;" />
+                    <img src="~/images/logo.png" style="width: 80%;" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2966/2966327.png'" />
                     <hr class="text-white" />
                 </div>
+
                 <div class="nav flex-column">
-                    <a class="nav-link active" asp-controller="Home" asp-action="Index">
+                    <a class="nav-link @(currentController == "Home" ? "active" : "")"
+                       asp-controller="Home" asp-action="Index">
                         <i class="bi bi-house-door me-2"></i> Inicio
                     </a>
-                    <a class="nav-link" asp-controller="Pacientes" asp-action="Index">
-                        <i class="bi bi-people me-2"></i> Pacientes
-                    </a>
-                    <a class="nav-link" asp-controller="Citas" asp-action="Index">
-                        <i class="bi bi-calendar-event me-2"></i> Citas Médicas
-                    </a>
-                    <a class="nav-link" asp-controller="Expedientes" asp-action="Index">
-                        <i class="bi bi-file-earmark-medical me-2"></i> Expedientes
-                    </a>
-                    <a class="nav-link" asp-controller="Medicos" asp-action="Index">
-                        <i class="bi bi-person-badge-fill me-2" |></i>
-                        <span>Médicos</span>
-                    </a>
-                    </>
-                    <hr />
-                    <a class="nav-link text-warning" asp-controller="Account" asp-action="Login">
+
+                    @if (User.IsInRole("Recepcionista") || User.IsInRole("Admin"))
+                    {
+                        <div class="section-title text-white">Admisión</div>
+                        <a class="nav-link @(currentController == "Pacientes" ? "active" : "")"
+                           asp-controller="Pacientes" asp-action="Index">
+                            <i class="bi bi-people me-2"></i> Pacientes
+                        </a>
+
+                        <a class="nav-link @(currentController == "Citas" ? "active" : "")"
+                           asp-controller="Citas" asp-action="Index">
+                            <i class="bi bi-calendar-event me-2"></i> Citas Médicas
+                        </a>
+                    }
+
+                    @if (User.IsInRole("Medico") || User.IsInRole("Admin"))
+                    {
+                        <div class="section-title text-white">Clínica</div>
+                        <a class="nav-link @(currentController == "Expedientes" ? "active" : "")"
+                           asp-controller="Expedientes" asp-action="Index">
+                            <i class="bi bi-file-earmark-medical me-2"></i> Expedientes
+                        </a>
+                    }
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <div class="section-title text-white">Configuración</div>
+                        <a class="nav-link @(currentController == "Medicos" ? "active" : "")"
+                           asp-controller="Medicos" asp-action="Index">
+                            <i class="bi bi-person-badge-fill me-2"></i> Médicos
+                        </a>
+
+                        <a class="nav-link @(currentController == "Usuario" ? "active" : "")"
+                           asp-controller="Usuario" asp-action="Index">
+                            <i class="bi bi-shield-lock me-2"></i> Usuarios
+                        </a>
+                    }
+
+                    <hr class="text-white-50 mx-3 mt-4" />
+
+                    <a class="nav-link text-warning" asp-controller="Account" asp-action="Logout">
                         <i class="bi bi-box-arrow-right me-2"></i> Salir
                     </a>
                 </div>
@@ -80,7 +123,15 @@
             <main class="col-md-10 ms-sm-auto p-0">
                 <header class="navbar-top p-3 d-flex justify-content-between align-items-center">
                     <h5 class="m-0 text-secondary">Panel de Control - Consultorio Médico Verde</h5>
-                    <span class="badge bg-success p-2">Bienvenido, Dr. Verde</span>
+                    <div class="d-flex align-items-center">
+                        <div class="text-end me-3 d-none d-sm-block">
+                            <small class="text-muted d-block" style="font-size: 0.7rem;">Sesión iniciada como:</small>
+                            <small class="fw-bold text-dark">@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value</small>
+                        </div>
+                        <span class="badge bg-success p-2">
+                            <i class="bi bi-person-check me-1"></i> @User.Identity.Name
+                        </span>
+                    </div>
                 </header>
                 <div class="p-4">
                     @RenderBody()
@@ -88,9 +139,10 @@
             </main>
         </div>
     </div>
-    @await RenderSectionAsync("Scripts", required: false)
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

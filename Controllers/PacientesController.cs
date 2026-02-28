@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 namespace ConsultorioVerde.Web.Controllers
 {   
+
     public class PacientesController : Controller
     {
         private readonly ApiServiceProxy _apiProxy;
@@ -15,10 +16,42 @@ namespace ConsultorioVerde.Web.Controllers
         }
 
         // GET: Pacientes
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string buscar, string filtro)
         {
+            // Estado inicial: No cargamos nada si el usuario acaba de entrar
+            //if (filtro == null)
+            //{
+            //    return View(new List<PacienteViewModel>());
+            //}
+
+            // Preparar objeto para el API (basado en el curl que pasaste)
+            var busqueda = new PacienteViewModel
+            {
+                IdPaciente = 0,
+                Nombre = "",
+                Apellido = "",
+                Identificacion = "",
+                FechaCreacion = DateTime.Now,
+                FechaModificacion = DateTime.Now,
+
+            };
+
+            if (!string.IsNullOrEmpty(buscar))
+            {
+                if (filtro == "Nombre")
+                    busqueda.Nombre = buscar;
+                else if (filtro == "Apellido")
+                    busqueda.Apellido = buscar;
+                else if (filtro == "Identificacion")
+                    busqueda.Identificacion = buscar;
+            }
+
+            // Persistencia para la vista
+            ViewBag.Buscar = buscar;
+            ViewBag.Filtro = filtro;
+
             // Llamada dinámica indicando POST
-            var lista = await _apiProxy.SendRequestAsync<List<PacienteViewModel>>("Paciente", "ListarPaciente", HttpMethod.Post);
+            var lista = await _apiProxy.SendRequestAsync<List<PacienteViewModel>>("Paciente", "ListarPaciente", HttpMethod.Post, busqueda);
 
             return View(lista);
         }

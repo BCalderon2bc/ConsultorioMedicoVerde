@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using ConsultorioMedicoVerde.Models;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -45,9 +46,13 @@ public class AccountController : Controller
 
             ModelState.AddModelError("", "Usuario o contraseña incorrectos.");
         }
+        catch (HttpRequestException)
+        {
+            ModelState.AddModelError("", "El servicio de autenticación no está disponible temporalmente.");
+        }
         catch (Exception ex)
         {
-            ModelState.AddModelError("", "Error de conexión: " + ex.Message);
+            ModelState.AddModelError("", "Ocurrió un error inesperado. Intente de nuevo.");
         }
 
         return View(model);
