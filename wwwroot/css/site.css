@@ -20,9 +20,9 @@ html {
 /* VARIABLES GLOBALES DEL SISTEMA */
 /* ============================= */
 :root {
-    --color-principal: #208b3a;
-    --color-principal-hover: #1a7431;
-    --color-principal-oscuro: #16652a;
+    --color-principal: #1f7a33; /* Verde elegante */
+    --color-principal-hover: #17662a; /* Hover más profundo */
+    --color-principal-oscuro: #145a25; /* Verde institucional */
     --color-fondo: #f8f9fa;
     --color-blanco: #ffffff;
 }
@@ -31,8 +31,82 @@ html {
 /* CONFIGURACIÓN GENERAL */
 /* ============================= */
 body {
+    font-family: 'Inter', sans-serif;
     background-color: var(--color-fondo);
     margin-bottom: 60px;
+}
+
+/* ============================= */
+/*  LOGIN  */
+/* ============================= */
+.login-page {
+    background: linear-gradient(135deg, #e8f5ec, #cde7d6, #b6ddc8);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
+/* Tarjeta del login */
+.login-card {
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.12);
+    background: rgba(255, 255, 255, 0.96);
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* Header verde superior */
+.card-header-custom {
+    background-color: var(--color-principal);
+    border-radius: 20px 20px 0 0 !important;
+    padding: 2rem 1rem;
+    color: white;
+}
+
+/* Logo login */
+.logo-login {
+    width: 140px;
+    height: auto;
+    margin-bottom: 1rem;
+}
+
+/* Animación entrada */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Botón login (usa el global pero mejora peso visual) */
+.login-card .btn-verde {
+    padding: 12px;
+    font-weight: 600;
+}
+
+/* Ajuste visual input-group dentro del login */
+.login-card .input-group-text {
+    background: #f8f9fa;
+    border-right: none;
+    color: var(--color-principal);
+}
+
+/* Evitar doble icono de mostrar contraseña en Edge */
+input::-ms-reveal,
+input::-ms-clear {
+    display: none;
+}
+
+.copyright-text {
+    font-size: 0.75rem;
+    color: #6c757d;
+    margin-top: 1.5rem;
+    display: block;
 }
 
 /* ============================= */
@@ -65,41 +139,92 @@ body {
     background-color: var(--color-principal);
     color: var(--color-blanco);
     border: 1px solid var(--color-principal);
-    transition: all 0.2s ease-in-out;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
 
 .btn-verde:hover {
     background-color: var(--color-principal-hover);
     border-color: var(--color-principal-hover);
     color: var(--color-blanco);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+}
+
+.btn-verde:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+}
+
+.btn-outline-primary,
+.btn-outline-danger {
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+
+.btn-outline-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+}
+
+.btn-outline-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(220,53,69,0.25);
+}
+
+.btn-outline-primary:active,
+.btn-outline-danger:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
 }
 
 /* ============================= */
 /* SIDEBAR */
 /* ============================= */
 .sidebar {
-    min-height: 100vh;
-    background-color: var(--color-principal);
-    color: var(--color-blanco);
+    background: linear-gradient( 180deg, #1f7a33, #145a25 );
+    padding-top: 10px;
 }
 
 .sidebar .nav-link {
-    color: var(--color-blanco);
-    border-radius: 5px;
-    margin: 5px 10px;
-    transition: all 0.3s;
+    color: rgba(255, 255, 255, 0.85);
+    border-radius: 10px;
+    margin: 6px 14px;
+    padding: 10px 14px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .sidebar .nav-link:hover {
-    background-color: var(--color-principal-oscuro);
-    color: var(--color-blanco);
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    transform: translateX(3px);
 }
 
 .sidebar .nav-link.active {
-    background-color: var(--color-blanco) !important;
+    position: relative;
+    background-color: #ffffff !important;
     color: var(--color-principal) !important;
-    font-weight: bold;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-weight: 600;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+.sidebar .nav-link.active::before {
+    content: "";
+    position: absolute;
+    left: -14px; /* ajustado al margen del nav-link */
+    top: 8px;
+    height: 70%;
+    width: 4px;
+    border-radius: 4px;
+    background: var(--color-principal);
 }
 
 /* ============================= */
@@ -114,30 +239,43 @@ body {
 /* TÍTULOS DE SECCIÓN EN SIDEBAR */
 /* ============================= */
 .section-title {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    opacity: 0.7;
-    margin-left: 20px;
-    margin-top: 15px;
+    letter-spacing: 1.5px;
+    opacity: 0.6;
+    margin: 18px 20px 8px;
+    font-weight: 600;
 }
 
 /* ============================= */
 /* TARJETAS PERSONALIZADAS */
 /* ============================= */
 .card {
-    border-radius: 8px;
+    border-radius: 14px;
+    border: none;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
 }
 
 /* ============================= */
 /* TABLAS ADMINISTRATIVAS */
 /* ============================= */
-.table thead {
-    background-color: #f1f3f5;
+.table {
+    border-radius: 12px;
+    overflow: hidden;
+    background: white;
 }
 
-.table-hover tbody tr:hover {
-    background-color: rgba(32, 139, 58, 0.05);
+.table thead {
+    background-color: #f3f6f4;
+    font-weight: 600;
+}
+
+.table tbody tr {
+    transition: background 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(31, 122, 51, 0.06);
 }
 
 /* ============================= */
@@ -146,4 +284,52 @@ body {
 .badge-verde {
     background-color: var(--color-principal);
     color: var(--color-blanco);
+}
+
+/* ============================= */
+/* ====== LOGO ====== */
+/* ============================= */
+.logo-container {
+    padding: 25px 15px;
+    text-align: center;
+}
+
+.logo-container img {
+    width: 150px;
+    border-radius: 18px;
+    background: var(--color-blanco);
+    padding: 10px;
+    transition: all 0.35s ease;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15), 0 0 0 rgba(31, 122, 51, 0); /* glow inicial invisible */
+}
+
+.logo-container img:hover {
+    transform: scale(1.06);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25), 0 0 18px rgba(31, 122, 51, 0.35); /* glow verde sutil */
+}
+
+/* ============================= */
+/* ====== Inputs ====== */
+/* ============================= */
+.form-control {
+    background: #ffffff;
+    border: 1px solid #e3e8e6;
+    border-radius: 12px;
+    padding: 10px 14px;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus {
+    border-color: var(--color-principal);
+    box-shadow: 0 0 0 4px rgba(31, 122, 51, 0.12);
+    transform: translateY(-1px);
+
+}
+
+.input-group-text {
+    background: transparent;
+    border: 1px solid #e3e8e6;
+    border-right: none;
+    border-radius: 12px 0 0 12px;
+    color: #7a8a84;
 }

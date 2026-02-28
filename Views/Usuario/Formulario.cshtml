@@ -7,7 +7,7 @@
                 <div class="card-header bg-success text-white py-3">
                     <h5 class="mb-0">
                         <i class="bi @(Model.IdUsuario == 0 ? "bi-person-plus" : "bi-pencil-square") me-2"></i>
-                        @(Model.IdUsuario == 0 ? "Crear Nuevo Usuario" : "Modificar Usuario: " + Model.NombreUsuario)
+                        @(Model.IdUsuario == 0 ? "Registrar Usuario" : "Editar Usuario: " + Model.NombreUsuario)
                     </h5>
                 </div>
                 <div class="card-body p-4">
@@ -29,8 +29,8 @@
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-bold">Nombre de Usuario</label>
                                 <div class="input-group">
-                                    <span class="input-group-text bg-light"><i class="bi bi-person-badge"></i></span>
-                                    <input asp-for="NombreUsuario" class="form-control" placeholder="Ej: jlopez" required />
+                                    <span class="input-group-text bg-light border-verde"><i class="bi bi-person-badge"></i></span>
+                                    <input asp-for="NombreUsuario" class="form-control border-verde" placeholder="Ej: jlopez" required />
                                 </div>
                                 <span asp-validation-for="NombreUsuario" class="text-danger small"></span>
                             </div>
@@ -38,8 +38,8 @@
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-bold">Rol del Sistema</label>
                                 <div class="input-group">
-                                    <span class="input-group-text bg-light"><i class="bi bi-shield-check"></i></span>
-                                    <select asp-for="Rol" id="ddlRol" class="form-select" required>
+                                    <span class="input-group-text bg-light border-verde"><i class="bi bi-shield-check"></i></span>
+                                    <select asp-for="Rol" id="ddlRol" class="form-select border-verde" required>
                                         @* <option value="">-- Seleccione un Rol --</option> *@
                                         <option value="Admin">Administrador</option>
                                         <option value="Medico">Médico</option>
@@ -50,14 +50,14 @@
                             </div>
 
                             <div class="col-md-12 mb-3">
-                                <label class="form-label fw-bold text-success">
+                                <label class="form-label fw-bold">
                                     <i class="bi bi-hospital me-1"></i> Vincular con Médico Profesional
                                 </label>
                                 <div class="input-group">
-                                    <span class="input-group-text border-success bg-light text-success">
+                                    <span class="input-group-text border-verde bg-light text-success">
                                         <i class="bi bi-person-vcard"></i>
                                     </span>
-                                    <select asp-for="IdMedico" id="ddlMedico" class="form-select border-success"
+                                    <select asp-for="IdMedico" id="ddlMedico" class="form-select border-verde"
                                             asp-items="@(ViewBag.Medicos as List<SelectListItem>)">
                                         @* <option value="0">-- No vinculado a un médico --</option> *@
                                     </select>
@@ -68,8 +68,8 @@
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-bold">Contraseña</label>
                                 <div class="input-group">
-                                    <span class="input-group-text bg-light"><i class="bi bi-shield-lock"></i></span>
-                                    <input asp-for="Password" type="password" class="form-control"
+                                    <span class="input-group-text bg-light border-verde"><i class="bi bi-shield-lock"></i></span>
+                                    <input asp-for="Password" type="password" class="form-control border-verde"
                                            value="@(Model.Password)"
                                            placeholder="@( "Requerido")"   />
                                 </div>
@@ -77,17 +77,17 @@
                             </div>
                         </div>
 
-                        <div class="border-top mt-4 pt-3 text-end">
+                        <div class="border-top mt-4 pt-3 d-flex justify-content-between align-items-center">
                             @* El botón cancelar también debe devolver los parámetros *@
                             <a asp-action="Index"
                                asp-route-buscar="@ViewContext.HttpContext.Request.Query["buscar"]"
                                asp-route-filtro="@ViewContext.HttpContext.Request.Query["filtro"]"
                                asp-route-mostrarActivos="@ViewContext.HttpContext.Request.Query["mostrarActivos"]"
                                class="btn btn-outline-secondary px-4 me-2">
-                                <i class="bi bi-x-circle me-1"></i> Cancelar
+                                <i class="bi bi-arrow-left me-1"></i> Regresar
                             </a>
                             <button type="submit" class="btn btn-success px-5 shadow">
-                                <i class="bi bi-save me-1"></i> @(Model.IdUsuario == 0 ? "Guardar Usuario" : "Actualizar Usuario")
+                                <i class="bi bi-save me-1"></i> @(Model.IdUsuario == 0 ? "Guardar Usuario" : "Guardar Cambios")
                             </button>
                         </div>
                     </form>

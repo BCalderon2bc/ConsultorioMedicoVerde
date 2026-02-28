@@ -43,7 +43,7 @@ namespace ConsultorioVerde.Web.Models
         public string? Telefono { get; set; }
 
         [JsonPropertyName("correo")]
-        [EmailAddress(ErrorMessage = "Correo no válido")]
+        [EmailAddress(ErrorMessage = "Formato de correo no válido")]
         [Display(Name = "Correo Electrónico")]
         [StringLength(100)]
         public string? Correo { get; set; }
