@@ -1,0 +1,121 @@
+﻿@model ConsultorioVerde.Web.Models.CitaViewModel
+@{
+    ViewData["Title"] = "Programar Cita Médica";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-success text-white py-3">
+                    <h5 class="mb-0"><i class="bi bi-calendar-plus me-2"></i>Nueva Cita Médica</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Crear" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="row">
+                            @* Selección de Paciente *@
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label fw-bold">Paciente</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-person-fill text-success"></i></span>
+                                    <select asp-for="IdPaciente" class="form-select border-start-0"
+                                            asp-items="@(new SelectList((System.Collections.IEnumerable)ViewBag.Pacientes, "IdPaciente", "NombreCompleto"))" required>
+                                        <option value="">-- Seleccione un Paciente --</option>
+                                    </select>
+                                </div>
+                                <span asp-validation-for="IdPaciente" class="text-danger small"></span>
+                            </div>
+
+                            @* Selección de Médico *@
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label fw-bold">Médico Especialista</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-person-badge-fill text-success"></i></span>
+                                    <select asp-for="IdMedico" class="form-select border-start-0"
+                                            asp-items="@(new SelectList(ViewBag.Medicos, "IdMedico", "NombreCompleto"))" required>
+                                        <option value="">-- Seleccione un Médico --</option>
+                                    </select>
+                                </div>
+                                <span asp-validation-for="IdMedico" class="text-danger small"></span>
+                            </div>
+
+                            @* Fecha de la Cita *@
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Fecha de la Cita</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-calendar-check text-success"></i></span>
+                                    @* Usamos type="date" para que solo muestre el calendario *@
+                                    <input type="date" id="fechaSolo" class="form-control border-start-0"
+                                           value="@Model.FechaCita.ToString("yyyy-MM-dd")" required />
+                                </div>
+                            </div>
+
+                            @* Hora de la Cita *@
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Hora de la Cita</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-clock-fill text-success"></i></span>
+                                    @* Usamos type="time" para un selector de hora limpio (AM/PM) *@
+                                    <input type="time" id="horaSolo" class="form-control border-start-0"
+                                           value="@Model.FechaCita.ToString("HH:mm")" required />
+                                </div>
+                            </div>
+
+                            @* Campo oculto que enviará la fecha combinada al servidor *@
+                            <input type="hidden" asp-for="FechaCita" id="FechaCitaFull" />
+
+                            @* Estado Inicial *@
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Estado Inicial</label>
+                                <select asp-for="Estado" class="form-select">
+                                    <option value="Pendiente">Pendiente</option>
+                                 @*    <option value="Completada">Completada</option>
+                                  *@   <option value="Cancelada">Cancelada</option>
+                                </select>
+                            </div>
+
+                            @* Motivo de la Cita *@
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label fw-bold">Motivo de la Consulta</label>
+                                <textarea asp-for="Motivo" class="form-control" rows="3" placeholder="Breve descripción del motivo..."></textarea>
+                                <span asp-validation-for="Motivo" class="text-danger small"></span>
+                            </div>
+
+                            @* Campos ocultos necesarios para el API (según tu CURL) *@
+                            <input type="hidden" asp-for="Activo" value="true" />
+                            <input type="hidden" asp-for="FechaInicio" id="fechaInicio" />
+                            <input type="hidden" asp-for="FechaFin" id="fechaFin" />
+                        </div>
+
+                        <div class="d-flex justify-content-between border-top mt-4 pt-3">
+                            <a asp-action="Index" class="btn btn-outline-secondary px-4">
+                                <i class="bi bi-arrow-left me-1"></i> Volver
+                            </a>
+                            <button type="submit" class="btn btn-success px-5 shadow">
+                                <i class="bi bi-check-circle me-1"></i> Confirmar Cita
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // Lógica para sincronizar fechaCita con fechaInicio y fechaFin antes de enviar
+        document.querySelector('form').addEventListener('submit', function() {
+            const fechaVal = document.querySelector('input[name="FechaCita"]').value;
+            document.getElementById('fechaInicio').value = fechaVal;
+            document.getElementById('fechaFin').value = fechaVal;
+        });
+    </script>
+}

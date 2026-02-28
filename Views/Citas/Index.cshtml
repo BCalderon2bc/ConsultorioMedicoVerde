@@ -2,7 +2,7 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="text-verde fw-bold"><i class="bi bi-calendar-event me-2"></i>Agenda de Citas Médicas</h2>
-    <a asp-action="Crear" class="btn btn-verde shadow-sm">
+    <a asp-action="Programar" class="btn btn-verde shadow-sm">
         <i class="bi bi-plus-lg"></i> Agendar Nueva Cita
     </a>
 </div>
@@ -36,6 +36,9 @@
                                 case "pendiente":
                                     <span class="badge bg-warning text-dark">Pendiente</span>
                                     break;
+                                case "programada":
+                                    <span class="badge bg-primary">Programada</span>
+                                    break;
                                 case "completada":
                                     <span class="badge bg-info">Completada</span>
                                     break;
@@ -48,16 +51,24 @@
                             }
                         </td>
                         <td class="text-center">
-                            <div class="btn-group">
-                                <a asp-action="Editar" asp-route-id="@item.IdCita" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
-                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                            <div class="btn-group shadow-sm">
+                                @* Botón Editar Cita (Reasigna fecha/médico) *@
+                                <a asp-action="Programar" asp-route-id="@item.IdCita" class="btn btn-sm btn-outline-primary" title="Editar Cita">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+
+                                @* Botón Eliminar/Cancelar *@
+                                <button class="btn btn-sm btn-outline-danger" title="Cancelar Cita">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+
+                                @* Botón Atender Paciente (Solo para Médicos o Admin) *@
                                 @if (User.IsInRole("Medico") || User.IsInRole("Admin"))
                                 {
-                                    <a asp-action="Editar" asp-route-id="@item.IdCita" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
-
+                                    <a asp-action="Atender" asp-route-id="@item.IdCita" class="btn btn-sm btn-success text-white" title="Atender Paciente">
+                                        <i class="bi bi-stethoscope me-1"></i> Atender
+                                    </a>
                                 }
-
-
                             </div>
                         </td>
                     </tr>

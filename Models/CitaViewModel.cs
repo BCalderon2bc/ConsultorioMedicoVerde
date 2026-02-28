@@ -13,7 +13,11 @@
         public bool Activo { get; set; }
 
         // Auditoría (según tu CREATE TABLE)
+        public DateTime? FechaInicio { get; set; }
+        public DateTime? FechaFin { get; set; }
         public DateTime? FechaCreacion { get; set; }
+        public DateTime? FechaModificacion { get; set; }
         public string UsuarioCreacion { get; set; }
+        public string usuarioModificacion { get; set; }
     }
 }
