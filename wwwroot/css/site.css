@@ -17,6 +17,133 @@ html {
   min-height: 100%;
 }
 
+/* VARIABLES GLOBALES DEL SISTEMA */
+/* ============================= */
+:root {
+    --color-principal: #208b3a;
+    --color-principal-hover: #1a7431;
+    --color-principal-oscuro: #16652a;
+    --color-fondo: #f8f9fa;
+    --color-blanco: #ffffff;
+}
+
+/* ============================= */
+/* CONFIGURACIÓN GENERAL */
+/* ============================= */
 body {
-  margin-bottom: 60px;
+    background-color: var(--color-fondo);
+    margin-bottom: 60px;
+}
+
+/* ============================= */
+/* UTILIDADES PERSONALIZADAS */
+/* ============================= */
+.text-verde {
+    color: var(--color-principal);
+}
+
+.border-verde {
+    border-color: var(--color-principal) !important;
+}
+
+.ocultar-usuario {
+    display: none !important;
+}
+
+.ocultar-paciente {
+    display: none !important;
+}
+
+.ocultar-medico {
+    display: none !important;
+}
+
+/* ============================= */
+/* BOTONES PERSONALIZADOS */
+/* ============================= */
+.btn-verde {
+    background-color: var(--color-principal);
+    color: var(--color-blanco);
+    border: 1px solid var(--color-principal);
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-verde:hover {
+    background-color: var(--color-principal-hover);
+    border-color: var(--color-principal-hover);
+    color: var(--color-blanco);
+}
+
+/* ============================= */
+/* SIDEBAR */
+/* ============================= */
+.sidebar {
+    min-height: 100vh;
+    background-color: var(--color-principal);
+    color: var(--color-blanco);
+}
+
+.sidebar .nav-link {
+    color: var(--color-blanco);
+    border-radius: 5px;
+    margin: 5px 10px;
+    transition: all 0.3s;
+}
+
+.sidebar .nav-link:hover {
+    background-color: var(--color-principal-oscuro);
+    color: var(--color-blanco);
+}
+
+.sidebar .nav-link.active {
+    background-color: var(--color-blanco) !important;
+    color: var(--color-principal) !important;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================= */
+/* NAVBAR SUPERIOR */
+/* ============================= */
+.navbar-top {
+    background-color: var(--color-blanco);
+    border-bottom: 1px solid #dee2e6;
+}
+
+/* ============================= */
+/* TÍTULOS DE SECCIÓN EN SIDEBAR */
+/* ============================= */
+.section-title {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.7;
+    margin-left: 20px;
+    margin-top: 15px;
+}
+
+/* ============================= */
+/* TARJETAS PERSONALIZADAS */
+/* ============================= */
+.card {
+    border-radius: 8px;
+}
+
+/* ============================= */
+/* TABLAS ADMINISTRATIVAS */
+/* ============================= */
+.table thead {
+    background-color: #f1f3f5;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(32, 139, 58, 0.05);
+}
+
+/* ============================= */
+/* BADGES PERSONALIZADOS OPCIONALES */
+/* ============================= */
+.badge-verde {
+    background-color: var(--color-principal);
+    color: var(--color-blanco);
 }
