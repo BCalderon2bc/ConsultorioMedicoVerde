@@ -18,15 +18,15 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label fw-bold">Nombre</label>
-                        <input asp-for="Nombre" class="form-control border-verde" />
+                        <input asp-for="Nombre" class="form-control border-verde solo-letras" />
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label fw-bold">Apellido</label>
-                        <input asp-for="Apellido" class="form-control border-verde" />
+                        <input asp-for="Apellido" class="form-control border-verde solo-letras" />
                     </div>
                     <div class="col-md-4 mb-3">
                         <label class="form-label fw-bold">Identificación</label>
-                        <input asp-for="Identificacion" class="form-control border-verde" />
+                        <input asp-for="Identificacion" class="form-control border-verde cedula-ni" />
                     </div>
                     <div class="col-md-4 mb-3">
                         <label class="form-label fw-bold">Fecha de Nacimiento</label>
@@ -42,11 +42,12 @@
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label fw-bold">Teléfono</label>
-                        <input asp-for="Telefono" class="form-control border-verde" />
+                        <input asp-for="Telefono" class="form-control border-verde telefono-mask" />
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">Correo</label>
-                        <input asp-for="Correo" class="form-control border-verde" />
+                        <label class="form-label fw-bold">Correo Electrónico</label>
+                        <input asp-for="Correo" class="form-control border-verde correo-valido" />
+                        <span asp-validation-for="Correo" class="text-danger small"></span>
                     </div>
                     <div class="col-md-12 mb-3">
                         <label class="form-label fw-bold">Dirección</label>

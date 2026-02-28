@@ -22,7 +22,7 @@
                                 <label asp-for="Nombre" class="form-label fw-bold">Nombre</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-white border-verde text-success"><i class="bi bi-person"></i></span>
-                                    <input asp-for="Nombre" class="form-control border-verde" placeholder="Ej: Carlos" />
+                                    <input asp-for="Nombre" class="form-control border-verde solo-letras" placeholder="Ej: Carlos" />
                                 </div>
                                 <span asp-validation-for="Nombre" class="text-danger small"></span>
                             </div>
@@ -31,7 +31,7 @@
                                 <label asp-for="Apellido" class="form-label fw-bold">Apellido</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-white border-verde text-success"><i class="bi bi-person"></i></span>
-                                    <input asp-for="Apellido" class="form-control border-verde" placeholder="Ej: Pérez" />
+                                    <input asp-for="Apellido" class="form-control border-verde solo-letras" placeholder="Ej: Pérez" />
                                 </div>
                                 <span asp-validation-for="Apellido" class="text-danger small"></span>
                             </div>
@@ -40,7 +40,7 @@
                                 <label asp-for="Especialidad" class="form-label fw-bold">Especialidad</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-white border-verde text-success"><i class="bi bi-stethoscope"></i></span>
-                                    <input asp-for="Especialidad" class="form-control border-verde" placeholder="Ej: Pediatría" />
+                                    <input asp-for="Especialidad" class="form-control border-verde solo-letras" placeholder="Ej: Pediatría" />
                                 </div>
                             </div>
 
@@ -56,7 +56,7 @@
                                 <label asp-for="Telefono" class="form-label fw-bold">Teléfono</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-white border-verde text-success"><i class="bi bi-telephone"></i></span>
-                                    <input asp-for="Telefono" class="form-control border-verde" placeholder="0000-0000" />
+                                    <input asp-for="Telefono" class="form-control border-verde telefono-mask" placeholder="0000-0000" />
                                 </div>
                             </div>
 
@@ -64,7 +64,7 @@
                                 <label asp-for="Correo" class="form-label fw-bold">Correo Electrónico</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-white border-verde text-success"><i class="bi bi-envelope"></i></span>
-                                    <input asp-for="Correo" class="form-control border-verde" placeholder="doctor@ejemplo.com" />
+                                    <input asp-for="Correo" class="form-control border-verde correo-valido" placeholder="doctor@ejemplo.com" />
                                 </div>
                                 <span asp-validation-for="Correo" class="text-danger small"></span>
                             </div>
