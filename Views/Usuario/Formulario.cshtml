@@ -12,7 +12,7 @@
                 </div>
                 <div class="card-body p-4">
                     <form asp-action=@(Model.IdUsuario == 0 ? "Guardar" :"GuardarEdicion") method="post" id="formUsuario">
-                        @Html.AntiForgeryToken()==
+                        @Html.AntiForgeryToken()
 
                         @* 1. CAMPOS OCULTOS DE IDENTIDAD Y AUDITORÍA *@
                         <input type="hidden" asp-for="IdUsuario" />
