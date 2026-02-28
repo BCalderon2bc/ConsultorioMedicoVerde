@@ -1,5 +1,21 @@
 ﻿@model IEnumerable<ConsultorioVerde.Web.Models.CitaViewModel>
 
+<style>
+    .text-verde {
+        color: #208b3a;
+    }
+
+    .btn-verde {
+        background-color: #208b3a;
+        color: white;
+    }
+
+        .btn-verde:hover {
+            background-color: #1a7431;
+            color: white;
+        }
+</style>
+
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="text-verde fw-bold"><i class="bi bi-calendar-event me-2"></i>Agenda de Citas Médicas</h2>
     <a asp-action="Programar" class="btn btn-verde shadow-sm">
@@ -7,12 +23,40 @@
     </a>
 </div>
 
+@* Bloque de Búsqueda y Filtros *@
+<div class="card shadow-sm border-0 mb-4 bg-light">
+    <div class="card-body">
+        <form asp-action="Index" method="get" class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label fw-bold text-muted small">FILTRAR POR:</label>
+                <select name="filtro" class="form-select border-success-subtle">
+                    <option value="Nombre Médico" selected="@(ViewBag.Filtro == "Nombre Médico")">Nombre Médico</option>
+                    <option value="Nombre Paciente" selected="@(ViewBag.Filtro == "Nombre Paciente")">Nombre Paciente</option>
+                    <option value="Estado" selected="@(ViewBag.Filtro == "Estado")">Estado</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-bold text-muted small">BUSCAR:</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-white"><i class="bi bi-search text-success"></i></span>
+                    <input type="text" name="buscar" class="form-control border-start-0"
+                           placeholder="Escriba aquí o deje vacío para ver todos" value="@ViewBag.Buscar">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-verde w-100 shadow-sm">
+                    <i class="bi bi-funnel-fill me-1"></i> Filtrar Citas
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <div class="card shadow-sm border-0">
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
             <thead class="table-light">
                 <tr>
-                    <th>ID</th>
                     <th>Fecha y Hora</th>
                     <th>Paciente</th>
                     <th>Médico</th>
@@ -22,54 +66,73 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model)
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var item in Model)
+                    {
+                        bool esFinalizada = item.Estado?.ToLower() == "completada" || item.Estado?.ToLower() == "cancelada";
+                        string claseDeshabilitado = esFinalizada ? "disabled opacity-50" : "";
+
+                        <tr>
+                            <td class="fw-bold">@item.FechaCita?.ToString("dd/MM/yyyy hh:mm tt")</td>
+                            <td><i class="bi bi-person me-1 text-secondary"></i> @item.NombrePaciente</td>
+                            <td><i class="bi bi-person-badge me-1 text-secondary"></i> @item.NombreMedico</td>
+                            <td class="small text-truncate" style="max-width: 200px;" title="@item.Motivo">@item.Motivo</td>
+                            <td class="text-center">
+                                @switch (item.Estado?.ToLower())
+                                {
+                                    case "pendiente":
+                                        <span class="badge bg-warning text-dark shadow-sm">Pendiente</span>
+                                        break;
+                                    case "completada":
+                                        <span class="badge bg-info shadow-sm">Completada</span>
+                                        break;
+                                    case "cancelada":
+                                        <span class="badge bg-danger shadow-sm">Cancelada</span>
+                                        break;
+                                    default:
+                                        <span class="badge bg-secondary shadow-sm">@item.Estado</span>
+                                        break;
+                                }
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group shadow-sm">
+                                    <a asp-action="Editar"
+                                       asp-route-id="@item.IdCita"
+                                       class="btn btn-sm btn-outline-primary @claseDeshabilitado"
+                                       title="Editar Cita">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+
+                                    @if (User.IsInRole("Medico") || User.IsInRole("Admin"))
+                                    {
+                                        if (esFinalizada)
+                                        {
+                                            <button type="button" class="btn btn-sm btn-success text-white opacity-50" disabled title="Cita finalizada">
+                                                <i class="bi bi-stethoscope me-1"></i> Atender
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <a asp-action="Atender"
+                                               asp-route-id="@item.IdCita"
+                                               class="btn btn-sm btn-success text-white"
+                                               title="Atender Paciente">
+                                                <i class="bi bi-stethoscope me-1"></i> Atender
+                                            </a>
+                                        }
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
                 {
                     <tr>
-                        <td class="text-muted">#@item.IdCita</td>
-                        <td class="fw-bold">@item.FechaCita.ToString("dd/MM/yyyy hh:mm tt")</td>
-                        <td><i class="bi bi-person me-1"></i> @item.NombrePaciente</td>
-                        <td><i class="bi bi-person-badge me-1"></i> @item.NombreMedico</td>
-                        <td class="small text-truncate" style="max-width: 200px;">@item.Motivo</td>
-                        <td class="text-center">
-                            @switch (item.Estado?.ToLower())
-                            {
-                                case "pendiente":
-                                    <span class="badge bg-warning text-dark">Pendiente</span>
-                                    break;
-                                case "programada":
-                                    <span class="badge bg-primary">Programada</span>
-                                    break;
-                                case "completada":
-                                    <span class="badge bg-info">Completada</span>
-                                    break;
-                                case "cancelada":
-                                    <span class="badge bg-danger">Cancelada</span>
-                                    break;
-                                default:
-                                    <span class="badge bg-secondary">@item.Estado</span>
-                                    break;
-                            }
-                        </td>
-                        <td class="text-center">
-                            <div class="btn-group shadow-sm">
-                                @* Botón Editar Cita (Reasigna fecha/médico) *@
-                                <a asp-action="Programar" asp-route-id="@item.IdCita" class="btn btn-sm btn-outline-primary" title="Editar Cita">
-                                    <i class="bi bi-pencil"></i>
-                                </a>
-
-                                @* Botón Eliminar/Cancelar *@
-                                <button class="btn btn-sm btn-outline-danger" title="Cancelar Cita">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-
-                                @* Botón Atender Paciente (Solo para Médicos o Admin) *@
-                                @if (User.IsInRole("Medico") || User.IsInRole("Admin"))
-                                {
-                                    <a asp-action="Atender" asp-route-id="@item.IdCita" class="btn btn-sm btn-success text-white" title="Atender Paciente">
-                                        <i class="bi bi-stethoscope me-1"></i> Atender
-                                    </a>
-                                }
-                            </div>
+                        <td colspan="6" class="text-center py-5">
+                            <i class="bi bi-calendar-x h1 d-block mb-3 text-muted"></i>
+                            <p class="text-muted">No se encontraron citas con los filtros aplicados.</p>
                         </td>
                     </tr>
                 }

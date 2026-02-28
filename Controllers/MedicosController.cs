@@ -15,12 +15,7 @@ namespace ConsultorioVerde.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(string buscar, string filtro)
         {
-            // Estado inicial: No cargamos nada si el usuario acaba de entrar
-            //if (filtro == null)
-            //{
-            //    return View(new List<MedicoViewModel>());
-            //}
-
+          
             // Preparar objeto para el API (basado en el curl que pasaste)
             var busqueda = new MedicoViewModel {
                 IdMedico = 0,

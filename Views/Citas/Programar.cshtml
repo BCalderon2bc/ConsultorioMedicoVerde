@@ -24,7 +24,7 @@
                                     <span class="input-group-text bg-light"><i class="bi bi-person-fill text-success"></i></span>
                                     <select asp-for="IdPaciente" class="form-select border-start-0"
                                             asp-items="@(new SelectList((System.Collections.IEnumerable)ViewBag.Pacientes, "IdPaciente", "NombreCompleto"))" required>
-                                        <option value="">-- Seleccione un Paciente --</option>
+                                        @* <option value="">-- Seleccione un Paciente --</option> *@
                                     </select>
                                 </div>
                                 <span asp-validation-for="IdPaciente" class="text-danger small"></span>
@@ -37,7 +37,7 @@
                                     <span class="input-group-text bg-light"><i class="bi bi-person-badge-fill text-success"></i></span>
                                     <select asp-for="IdMedico" class="form-select border-start-0"
                                             asp-items="@(new SelectList(ViewBag.Medicos, "IdMedico", "NombreCompleto"))" required>
-                                        <option value="">-- Seleccione un Médico --</option>
+                                        @* <option value="">-- Seleccione un Médico --</option> *@
                                     </select>
                                 </div>
                                 <span asp-validation-for="IdMedico" class="text-danger small"></span>
@@ -50,7 +50,7 @@
                                     <span class="input-group-text bg-light"><i class="bi bi-calendar-check text-success"></i></span>
                                     @* Usamos type="date" para que solo muestre el calendario *@
                                     <input type="date" id="fechaSolo" class="form-control border-start-0"
-                                           value="@Model.FechaCita.ToString("yyyy-MM-dd")" required />
+                                           value="@Model.FechaCita?.ToString("yyyy-MM-dd")" required />
                                 </div>
                             </div>
 
@@ -61,7 +61,7 @@
                                     <span class="input-group-text bg-light"><i class="bi bi-clock-fill text-success"></i></span>
                                     @* Usamos type="time" para un selector de hora limpio (AM/PM) *@
                                     <input type="time" id="horaSolo" class="form-control border-start-0"
-                                           value="@Model.FechaCita.ToString("HH:mm")" required />
+                                           value="@Model.FechaCita?.ToString("HH:mm")" required />
                                 </div>
                             </div>
 
@@ -74,7 +74,7 @@
                                 <select asp-for="Estado" class="form-select">
                                     <option value="Pendiente">Pendiente</option>
                                  @*    <option value="Completada">Completada</option>
-                                  *@   <option value="Cancelada">Cancelada</option>
+                                     <option value="Cancelada">Cancelada</option>*@
                                 </select>
                             </div>
 
@@ -84,11 +84,7 @@
                                 <textarea asp-for="Motivo" class="form-control" rows="3" placeholder="Breve descripción del motivo..."></textarea>
                                 <span asp-validation-for="Motivo" class="text-danger small"></span>
                             </div>
-
-                            @* Campos ocultos necesarios para el API (según tu CURL) *@
-                            <input type="hidden" asp-for="Activo" value="true" />
-                            <input type="hidden" asp-for="FechaInicio" id="fechaInicio" />
-                            <input type="hidden" asp-for="FechaFin" id="fechaFin" />
+             
                         </div>
 
                         <div class="d-flex justify-content-between border-top mt-4 pt-3">
@@ -113,9 +109,23 @@
     <script>
         // Lógica para sincronizar fechaCita con fechaInicio y fechaFin antes de enviar
         document.querySelector('form').addEventListener('submit', function() {
-            const fechaVal = document.querySelector('input[name="FechaCita"]').value;
-            document.getElementById('fechaInicio').value = fechaVal;
-            document.getElementById('fechaFin').value = fechaVal;
+
+            // Capturamos los valores de los inputs visuales
+            const fechaVal = document.getElementById('fechaSolo').value;
+            const horaVal = document.getElementById('horaSolo').value;
+
+            if (fechaVal && horaVal) {
+                // Construimos el formato ISO: YYYY-MM-DDTHH:mm:00
+                const fechaCompleta = fechaVal + 'T' + horaVal + ':00';
+
+                // Asignamos el valor combinado a todos los campos ocultos necesarios
+                document.getElementById('FechaCitaFull').value = fechaCompleta;
+                document.getElementById('fechaInicio').value = fechaCompleta;
+                document.getElementById('fechaFin').value = fechaCompleta;
+
+  
+            }
+
         });
     </script>
 }

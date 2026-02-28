@@ -1,0 +1,119 @@
+﻿@model ConsultorioVerde.Web.Models.CitaViewModel
+@{
+    ViewData["Title"] = "Editar Cita Médica";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Editar Cita Médica #@Model.IdCita</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Editar" method="post" id="formEditarCita">
+                        @Html.AntiForgeryToken()
+
+                        @* Campos Ocultos de Identidad y Auditoría *@
+                        <input type="hidden" asp-for="IdCita" />
+                        <input type="hidden" asp-for="UsuarioCreacion" />
+                        <input type="hidden" asp-for="FechaCreacion" />
+                   
+
+                        @* Campos para el API *@
+                        <input type="hidden" asp-for="FechaCita" id="FechaCitaFull" />
+                        @* <input type="hidden" asp-for="FechaInicio" id="fechaInicio" />
+                        <input type="hidden" asp-for="FechaFin" id="fechaFin" /> *@
+
+                        <div class="row">
+                            @* Selección de Paciente *@
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label fw-bold">Paciente</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-person-fill text-success"></i></span>
+
+                                    @* El select deshabilitado muestra la opción seleccionada pero no permite cambiarla *@
+                                    <select asp-for="IdPaciente" class="form-select border-success" disabled
+                                            asp-items="@(new SelectList((System.Collections.IEnumerable)ViewBag.Pacientes, "IdPaciente", "NombreCompleto"))">
+                                    </select>
+
+                                    @* Este input oculto es el que REALMENTE envía el valor al Controlador *@
+                                    <input type="hidden" asp-for="IdPaciente" />
+                                </div>
+                                <span asp-validation-for="IdPaciente" class="text-danger small"></span>
+                            </div>
+
+                            @* Selección de Médico *@
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label fw-bold">Médico</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-person-badge-fill text-success"></i></span>
+
+                                    <select asp-for="IdMedico" class="form-select border-success" disabled
+                                            asp-items="@(new SelectList((System.Collections.IEnumerable)ViewBag.Medicos, "IdMedico", "NombreCompleto"))">
+                                    </select>
+
+                                    <input type="hidden" asp-for="IdMedico" />
+                                </div>
+                                <span asp-validation-for="IdMedico" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Fecha</label>
+                                <input type="date" id="fechaSolo" class="form-control"
+                                       value="@Model.FechaCita?.ToString("yyyy-MM-dd")" required />
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Hora</label>
+                                <input type="time" id="horaSolo" class="form-control"
+                                       value="@Model.FechaCita?.ToString("HH:mm")" required />
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label fw-bold">Estado</label>
+                                <select asp-for="Estado" class="form-select">
+                                    <option value="Pendiente">Pendiente</option>
+                                    <option value="Completada">Completada</option>
+                                    <option value="Cancelada">Cancelada</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label fw-bold">Motivo</label>
+                                <textarea asp-for="Motivo" class="form-control" rows="3"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between border-top mt-4 pt-3">
+                            <a asp-action="Index" class="btn btn-outline-secondary px-4">Cancelar</a>
+                            <button type="submit" class="btn btn-primary px-5 shadow">Guardar Cambios</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('formEditarCita').addEventListener('submit', function (e) {
+             // Capturamos los valores de los inputs visuales
+            const fechaVal = document.getElementById('fechaSolo').value;
+            const horaVal = document.getElementById('horaSolo').value;
+
+            if (fechaVal && horaVal) {
+                // Construimos el formato ISO: YYYY-MM-DDTHH:mm:00
+                const fechaCompleta = fechaVal + 'T' + horaVal + ':00';
+
+                // Asignamos el valor combinado a todos los campos ocultos necesarios
+                document.getElementById('FechaCitaFull').value = fechaCompleta;
+                document.getElementById('fechaInicio').value = fechaCompleta;
+                document.getElementById('fechaFin').value = fechaCompleta;
+
+
+            }
+        });
+    </script>
+}
