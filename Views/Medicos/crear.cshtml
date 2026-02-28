@@ -8,10 +8,10 @@
     <div class="row justify-content-center">
         <div class="col-md-10">
             <div class="card shadow-lg border-0">
-                <div class="card-header bg-white border-bottom py-3">
-                    <h3 class="text-verde fw-bold mb-0">
-                        <i class="bi bi-person-plus-fill me-2"></i>Registrar Nuevo Médico
-                    </h3>
+                <div class="card-header bg-success text-white py-3">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person-plus-fill me-2"></i>Registrar Médico
+                    </h5>
                 </div>
                 <div class="card-body p-4">
                     <form asp-action="Crear" method="post">
@@ -19,7 +19,7 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label asp-for="Nombre" class="form-label fw-bold text-success">Nombre</label>
+                                <label asp-for="Nombre" class="form-label fw-bold">Nombre</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-white border-verde text-success"><i class="bi bi-person"></i></span>
                                     <input asp-for="Nombre" class="form-control border-verde" placeholder="Ej: Carlos" />
@@ -28,7 +28,7 @@
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label asp-for="Apellido" class="form-label fw-bold text-success">Apellido</label>
+                                <label asp-for="Apellido" class="form-label fw-bold">Apellido</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-white border-verde text-success"><i class="bi bi-person"></i></span>
                                     <input asp-for="Apellido" class="form-control border-verde" placeholder="Ej: Pérez" />
@@ -37,7 +37,7 @@
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label asp-for="Especialidad" class="form-label fw-bold text-success">Especialidad</label>
+                                <label asp-for="Especialidad" class="form-label fw-bold">Especialidad</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-white border-verde text-success"><i class="bi bi-stethoscope"></i></span>
                                     <input asp-for="Especialidad" class="form-control border-verde" placeholder="Ej: Pediatría" />
@@ -45,7 +45,7 @@
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label asp-for="NumeroRegistroMINSA" class="form-label fw-bold text-success">Registro MINSA</label>
+                                <label asp-for="NumeroRegistroMINSA" class="form-label fw-bold">Registro MINSA</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-white border-verde text-success"><i class="bi bi-card-checklist"></i></span>
                                     <input asp-for="NumeroRegistroMINSA" class="form-control border-verde" placeholder="Código sanitario" />
@@ -53,7 +53,7 @@
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label asp-for="Telefono" class="form-label fw-bold text-success">Teléfono</label>
+                                <label asp-for="Telefono" class="form-label fw-bold">Teléfono</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-white border-verde text-success"><i class="bi bi-telephone"></i></span>
                                     <input asp-for="Telefono" class="form-control border-verde" placeholder="0000-0000" />
@@ -61,7 +61,7 @@
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label asp-for="Correo" class="form-label fw-bold text-success">Correo Electrónico</label>
+                                <label asp-for="Correo" class="form-label fw-bold">Correo Electrónico</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-white border-verde text-success"><i class="bi bi-envelope"></i></span>
                                     <input asp-for="Correo" class="form-control border-verde" placeholder="doctor@ejemplo.com" />
@@ -70,18 +70,14 @@
                             </div>
                         </div>
 
-                        <hr class="my-4">
-
-                        <div class="d-flex justify-content-between align-items-center">
-                            <a asp-action="Index" class="btn btn-outline-secondary px-4">
-                                <i class="bi bi-arrow-left me-2"></i>Regresar
+                        <div class="border-top mt-4 pt-3 d-flex justify-content-between align-items-center">
+                            <a asp-action="Index" class="btn btn-outline-secondary px-4 me-2">
+                                <i class="bi bi-arrow-left me-1"></i>Regresar
                             </a>
                             <form asp-action="Crear" method="post">
-                                <div class="mt-4">
-                                    <button type="submit" class="btn btn-verde px-5 shadow-sm">
-                                        <i class="bi bi-save me-2"></i>Guardar Médico
+                                    <button type="submit" class="btn btn-success px-5 shadow">
+                                        <i class="bi bi-save me-1"></i>Guardar Médico
                                     </button>
-                                </div>
                             </form>
                         </div>
                     </form>
