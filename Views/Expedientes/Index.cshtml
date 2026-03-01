@@ -3,7 +3,7 @@
 }
 
 <div class="container mt-4">
-
+      
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="text-verde fw-bold">
@@ -17,8 +17,8 @@
             <input type="text"
                    class="form-control shadow-sm"
                    id="txtBuscarPaciente"
-                   placeholder="Buscar por cédula o nombre..."
-                   style="width: 280px;">
+                   placeholder="Buscar por Identificación del paciente"
+                   style="width: 400px;">
 
             <button class="btn btn-success shadow-sm" id="btnBuscarPaciente">
                 <i class="bi bi-search"></i>
@@ -127,7 +127,6 @@
                                 <th>Dosis</th>
                                 <th>Frecuencia</th>
                                 <th>Fecha</th>
-                                <th>Médico</th>
                             </tr>
                         </thead>
                         <tbody id="tblRecetas"></tbody>
@@ -152,12 +151,11 @@
             </div>
 
             <!-- BOTÓN REPORTE -->
-            <div class="text-end mt-4">
-                <button class="btn btn-danger shadow-sm" id="btnGenerarReporte">
-                    <i class="bi bi-file-earmark-pdf me-1"></i>
-                    Generar Reporte PDF
-                </button>
-            </div>
+            <a asp-action="ExportarPdf"
+               asp-route-identificacion="001-190898-1056B"
+               class="btn btn-danger shadow">
+                <i class="bi bi-file-earmark-pdf me-1"></i> Generar Reporte PDF
+            </a>
 
         </div>
     </div>

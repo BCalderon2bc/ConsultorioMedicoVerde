@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Rotativa.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +45,12 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Account}/{action=Login}/{id?}");
+
+
+// Configurar Rotativa (asegúrate de que la carpeta exista en wwwroot)
+//IWebHostEnvironment env = app.Environment;
+//RotativaConfiguration.Setup(env.WebRootPath, "Rotativa");
+
 
 // ÚLTIMO: Arrancar la aplicación
 app.Run();

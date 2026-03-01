@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ConsultorioVerde.Web.Models;
+﻿
 using ConsultorioMedicoVerde.Models;
+using ConsultorioVerde.Web.Models;
+using Microsoft.AspNetCore.Mvc;
+using Rotativa.AspNetCore;
 
 namespace ConsultorioVerde.Web.Controllers
 {
@@ -56,6 +58,38 @@ namespace ConsultorioVerde.Web.Controllers
             var urlReporte = Url.Action("GenerarReportePDF", "ApiExpediente", new { idPaciente }, Request.Scheme);
             return Redirect(urlReporte);
         }
+
+        //public async Task<IActionResult> ExportarPdf(string identificacion)
+        //{
+
+        //    const filtroRequest = { Filtro: filtro };
+
+        //var modelo = await _apiProxy.SendRequestAsync<ExpedienteViewModel>(
+        //         "Expediente",
+        //         "ObtenerExpediente",
+        //         HttpMethod.Post,
+        //         filtroRequest
+        //     );
+
+        //    //var modelo = await ObtenerExpedienteCompleto(identificacion);
+
+        //    if (modelo == null) return NotFound();
+
+        //    // 2. Retornar la vista como PDF
+        //    return new ViewAsPdf("VistaReportePdf", modelo)
+        //    {
+        //        FileName = $"Expediente_{identificacion}.pdf",
+        //        PageOrientation = Rotativa.AspNetCore.Options.Orientation.Portrait,
+        //        PageSize = Rotativa.AspNetCore.Options.Orientation.A4,
+        //        CustomSwitches = "--page-offset 0 --footer-center [page]/[toPage] --footer-font-size 9"
+        //    };
+        //}
+
+
+
+
+
+
 
     }
 }

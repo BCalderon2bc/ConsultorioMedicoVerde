@@ -1,0 +1,50 @@
+﻿@* @page
+@model CExpedientesController
+
+@{ Layout = null; }
+
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    <style>
+        .header-verde { background-color: #198754; color: white; padding: 20px; }
+        .seccion-titulo { border-bottom: 2px solid #198754; color: #198754; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="header-verde text-center">
+        <h2>CONSULTORIO MÉDICO VERDE</h2>
+        <p>Expediente Clínico Digital</p>
+    </div>
+
+    <div class="container mt-4">
+        <h4 class="seccion-titulo">Información del Paciente</h4>
+        <div class="row">
+            <div class="col-6"><strong>Nombre:</strong> @Model.Paciente.NombreCompleto</div>
+            <div class="col-6"><strong>Cédula:</strong> @Model.Paciente.Identificacion</div>
+            </div>
+
+        <h4 class="seccion-titulo">Historial de Citas</h4>
+        <table class="table table-striped mt-2">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Motivo</th>
+                    <th>Médico</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var cita in Model.Citas) {
+                    <tr>
+                        <td>@cita.Fecha.ToShortDateString()</td>
+                        <td>@cita.Motivo</td>
+                        <td>@cita.NombreMedico</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
+ *@

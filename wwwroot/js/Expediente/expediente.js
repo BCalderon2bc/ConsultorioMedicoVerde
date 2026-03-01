@@ -47,14 +47,30 @@
        MOSTRAR DATOS GENERALES
     ================================== */
     function mostrarPaciente(p) {
-        document.getElementById("lblNombre").innerText = p.nombreCompleto;
-        document.getElementById("lblEdad").innerText = p.edad + " años";
+        document.getElementById("lblNombre").innerText = p.nombre;
+        document.getElementById("lblEdad").innerText = calcularEdad(p.fechaNacimiento) + " años";
         document.getElementById("lblGenero").innerText = p.genero;
         document.getElementById("lblTelefono").innerText = p.telefono;
         document.getElementById("lblCorreo").innerText = p.correo;
         document.getElementById("lblDireccion").innerText = p.direccion;
     }
 
+    /* ================================
+      CALCULAR EDAD 
+        ================================== */
+    function calcularEdad(fechaNacimiento) {
+        const hoy = new Date();
+        const nacimiento = new Date(fechaNacimiento);
+
+        let edad = hoy.getFullYear() - nacimiento.getFullYear();
+        const mes = hoy.getMonth() - nacimiento.getMonth();
+
+        if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) {
+            edad--;
+        }
+
+        return edad;
+    }
 
     /* ================================
        CONSULTAS
@@ -77,10 +93,7 @@
                         <span class="badge bg-success">
                             <i class="bi bi-calendar-event me-1"></i>
                             ${formatearFecha(c.fechaConsulta)}
-                        </span>
-                        <h6 class="m-0 fw-bold text-dark">
-                            Médico: ${c.nombreMedico}
-                        </h6>
+     
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -152,7 +165,6 @@
                     <td>${r.dosis}</td>
                     <td>${r.frecuencia}</td>
                     <td>${formatearFecha(r.fechaCreacion)}</td>
-                    <td>${r.nombreMedico}</td>
                 </tr>
             `;
         });
