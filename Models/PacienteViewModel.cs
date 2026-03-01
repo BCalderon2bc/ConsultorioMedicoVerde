@@ -34,7 +34,7 @@ namespace ConsultorioVerde.Web.Models
 
         [JsonPropertyName("identificacion")] // Nombre exacto según tu última imagen
         [Display(Name = "Identificación")]
-        [StringLength(15)]
+        [StringLength(16)]
         public string? Identificacion { get; set; }
 
         [JsonPropertyName("telefono")]
@@ -74,9 +74,9 @@ namespace ConsultorioVerde.Web.Models
         public bool? Activo { get; set; } = false; // bit en SQL
 
         // Datos del Historial (Campos de tu nueva tabla)
-        public string Alergias { get; set; }
-        public string EnfermedadesPrevias { get; set; }
-        public string CirugiasPrevias { get; set; }
-        public string Observaciones { get; set; }
+        public string? Alergias { get; set; }
+        public string? EnfermedadesPrevias { get; set; }
+        public string? CirugiasPrevias { get; set; }
+        public string? Observaciones { get; set; }
     }
 }

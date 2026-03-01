@@ -33,7 +33,6 @@
                     <div class="col-md-4 mb-3">
                         <label class="form-label fw-bold">Género</label>
                         <select asp-for="Genero" class="form-select border-verde">
-                            @* <option value="">Seleccione...</option> *@
                             <option value="M">Masculino</option>
                             <option value="F">Femenino</option>
                             <option value="O">Otro</option>
@@ -54,30 +53,43 @@
                     </div>
                 </div>
 
-                @* --- Debajo de la dirección, agregamos el Historial --- *@
+                @* --- Sección: Historial Médico Inicial --- *@
                 <div class="row mt-4">
                     <div class="col-12">
-                        <div class="card border-info bg-light shadow-sm">
-                            <div class="card-header bg-info text-white">
-                                <h6 class="mb-0"><i class="bi bi-clipboard2-pulse-fill me-2"></i>Historial Médico Inicial</h6>
+                        <div class="card shadow-sm border-0 bg-light rounded-3">
+                            <div class="card-header bg-success text-white py-2">
+                                <h6 class="mb-0">
+                                    <i class="bi bi-clipboard2-pulse-fill me-2"></i>Historial Médico Inicial
+                                </h6>
                             </div>
-                            <div class="card-body">
+                            <div class="card-body p-4">
                                 <div class="row">
                                     <div class="col-md-12 mb-3">
                                         <label class="form-label fw-bold">Alergias Conocidas</label>
-                                        <input asp-for="Alergias" class="form-control border-info" placeholder="Medicamentos, alimentos, etc." />
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-white border-verde"><i class="bi bi-exclamation-triangle text-danger"></i></span>
+                                            <input asp-for="Alergias" class="form-control border-verde" placeholder="Medicamentos, alimentos, etc." />
+                                        </div>
                                     </div>
+
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label fw-bold">Enfermedades Previas</label>
-                                        <textarea asp-for="EnfermedadesPrevias" class="form-control border-info" rows="3" placeholder="Diabetes, Hipertensión, etc."></textarea>
+                                        <textarea asp-for="EnfermedadesPrevias" class="form-control border-verde" rows="3"
+                                                  placeholder="Diabetes, Hipertensión, Asma, etc."></textarea>
                                     </div>
+
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label fw-bold">Cirugías Previas</label>
-                                        <textarea asp-for="CirugiasPrevias" class="form-control border-info" rows="3" placeholder="Detalle intervenciones anteriores..."></textarea>
+                                        <textarea asp-for="CirugiasPrevias" class="form-control border-verde" rows="3"
+                                                  placeholder="Detalle intervenciones quirúrgicas anteriores..."></textarea>
                                     </div>
+
                                     <div class="col-md-12">
                                         <label class="form-label fw-bold">Observaciones Generales</label>
-                                        <input asp-for="Observaciones" class="form-control border-info" />
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-white border-verde"><i class="bi bi-chat-left-text text-success"></i></span>
+                                            <input asp-for="Observaciones" class="form-control border-verde" placeholder="Notas adicionales relevantes" />
+                                        </div>
                                     </div>
                                 </div>
                             </div>

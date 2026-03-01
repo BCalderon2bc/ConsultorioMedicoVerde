@@ -81,8 +81,22 @@ namespace ConsultorioVerde.Web.Controllers
             ViewBag.FechaInicio = fInicio.ToString("yyyy-MM-dd");
             ViewBag.FechaFin = fFin.ToString("yyyy-MM-dd");
 
+            // Re-mapear NombreConCedula como hicimos antes
+            ViewBag.Pacientes = pacientes?.Select(p => new {
+                p.IdPaciente,
+                NombreConCedula = $"{p.Nombre} {p.Apellido} - {p.Identificacion}"
+            }).ToList();
+
+            // 3. Preparar lista de Médicos: "Nombre Apellido - Especialidad"
+            ViewBag.Medicos = medicos?.Select(m => new {
+                IdMedico = m.IdMedico,
+                // Aquí puedes agregar la especialidad si la tienes en el modelo para diferenciar médicos
+                NombreConEspecialidad = $"{m.Nombre} {m.Apellido} {(string.IsNullOrEmpty(m.NumeroRegistroMINSA) ? "" : "- " + m.NumeroRegistroMINSA)}"
+            }).ToList();
+
             return View(citas ?? new List<CitaViewModel>());
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Crear(CitaViewModel citaMedica)
@@ -128,20 +142,29 @@ namespace ConsultorioVerde.Web.Controllers
         public async Task<IActionResult> Editar(int id)
         {
             // 1. Obtener la cita específica
-            var filtro = new { idCita = id, activo = true };
+            var filtro = new { idCita = id};
             var citas = await _apiProxy.SendRequestAsync<List<CitaViewModel>>("CitaMedica", "ListarCitaMedica", HttpMethod.Post, filtro);
-            var cita = citas?.FirstOrDefault();
-
-            if (cita == null) return NotFound();
+            var cita = citas.Where((e) => e.IdCita == id).ToList();
 
             // 2. Cargar Listas para los Selects
             var pacientes = await _apiProxy.SendRequestAsync<List<PacienteViewModel>>("Paciente", "ListarPaciente", HttpMethod.Post, new { });
             var medicos = await _apiProxy.SendRequestAsync<List<MedicoViewModel>>("Medico", "ListarMedico", HttpMethod.Post, new { });
 
-            ViewBag.Pacientes = pacientes ?? new List<PacienteViewModel>();
-            ViewBag.Medicos = medicos ?? new List<MedicoViewModel>();
 
-            return View(cita);
+            // Re-mapear NombreConCedula como hicimos antes
+            ViewBag.Pacientes = pacientes?.Select(p => new {
+                p.IdPaciente,
+                NombreConCedula = $"{p.Nombre} {p.Apellido} - {p.Identificacion}"
+            }).ToList();
+
+            // 3. Preparar lista de Médicos: "Nombre Apellido - Especialidad"
+            ViewBag.Medicos = medicos?.Select(m => new {
+                IdMedico = m.IdMedico,
+                // Aquí puedes agregar la especialidad si la tienes en el modelo para diferenciar médicos
+                NombreConEspecialidad = $"{m.Nombre} {m.Apellido} {(string.IsNullOrEmpty(m.NumeroRegistroMINSA) ? "" : "- " + m.NumeroRegistroMINSA)}"
+            }).ToList();
+
+            return View(cita.First());
         }
 
         [HttpPost]
@@ -182,9 +205,20 @@ namespace ConsultorioVerde.Web.Controllers
             // Obtener Médicos
             var medicos = await _apiProxy.SendRequestAsync<List<MedicoViewModel>>("Medico", "ListarMedico", HttpMethod.Post, new { idMedico = 0 });
 
-            // IMPORTANTE: Asegurar que no sean null para que la vista no explote
-            ViewBag.Pacientes = pacientes ?? new List<PacienteViewModel>();
-            ViewBag.Medicos = medicos ?? new List<MedicoViewModel>();
+            // 2. Preparar lista de Pacientes: "Nombre Apellido - Cédula"
+            ViewBag.Pacientes = pacientes?.Select(p => new {
+                IdPaciente = p.IdPaciente,
+                NombreCompleto = $"{p.Nombre} {p.Apellido} - {p.Identificacion}"
+            }).ToList();
+
+            // 3. Preparar lista de Médicos: "Nombre Apellido - Especialidad"
+            ViewBag.Medicos = medicos?.Select(m => new {
+                IdMedico = m.IdMedico,
+                // Aquí puedes agregar la especialidad si la tienes en el modelo para diferenciar médicos
+                NombreConEspecialidad = $"{m.Nombre} {m.Apellido} {(string.IsNullOrEmpty(m.NumeroRegistroMINSA) ? "" : "- " + m.NumeroRegistroMINSA)}"
+            }).ToList();
+
+
 
             return View(new CitaViewModel { FechaCita = DateTime.Now });
         }

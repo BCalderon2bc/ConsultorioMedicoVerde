@@ -1,6 +1,7 @@
 ﻿using ConsultorioVerde.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace ConsultorioVerde.Web.Controllers
@@ -75,15 +76,14 @@ namespace ConsultorioVerde.Web.Controllers
             {
                 try
                 {
-                    // Preparación del objeto según el JSON del CURL
-                    paciente.IdPaciente = 0;
-                    paciente.Activo = true;
+                    var idUsuarioLogueado = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.Identity.Name;
 
-                    DateTime ahora = DateTime.Now;
-                    paciente.FechaCreacion = ahora;
-                    paciente.FechaModificacion = ahora;
-                    paciente.UsuarioCreacion = "WebUser";
-                    paciente.UsuarioModificacion = "WebUser";
+                    // Preparación del objeto según el JSON del CURL
+                    //paciente.IdPaciente = 0;
+                    paciente.Activo = true;
+                    paciente.FechaCreacion = DateTime.Now;
+                 //   paciente.FechaModificacion = DateTime.Now;
+                    paciente.UsuarioCreacion = idUsuarioLogueado;
 
                     // Enviamos a la API
                     var respuesta = await _apiProxy.SendRequestAsync<RespuestaConsultaPaciente>("Paciente", "InsertarPaciente", HttpMethod.Post, paciente);
@@ -93,27 +93,30 @@ namespace ConsultorioVerde.Web.Controllers
                         // 2. Extraer el ID generado del paciente (ajusta según tu respuesta API)
                         int idNuevoPaciente = respuesta.idPaciente;
 
-                        // 3. Crear objeto Historial con el ID del paciente
-                        var historialApi = new
+                        if (!string.IsNullOrWhiteSpace(paciente.Alergias)
+                            || !string.IsNullOrWhiteSpace(paciente.EnfermedadesPrevias)
+                            || !string.IsNullOrWhiteSpace(paciente.CirugiasPrevias)
+                            || !string.IsNullOrWhiteSpace(paciente.Observaciones) )
                         {
-                            idPaciente = idNuevoPaciente,
-                            alergias = paciente.Alergias,
-                            enfermedadesPrevias = paciente.EnfermedadesPrevias,
-                            cirugiasPrevias = paciente.CirugiasPrevias,
-                            observaciones = paciente.Observaciones,
-                            fechaCreacion = DateTime.Now,
-                            usuarioCreacion = User.Identity.Name
-                        };
+                            // 3. Crear objeto Historial con el ID del paciente
+                            var historialApi = new
+                            {
+                                idPaciente = idNuevoPaciente,
+                                alergias = paciente.Alergias,
+                                enfermedadesPrevias = paciente.EnfermedadesPrevias,
+                                cirugiasPrevias = paciente.CirugiasPrevias,
+                                observaciones = paciente.Observaciones,
+                                fechaCreacion = DateTime.Now,
+                                usuarioCreacion = User.Identity.Name
+                            };
 
-                        // 4. Insertar en la tabla [HistorialMedico]
-                        await _apiProxy.SendRequestAsync<object>("HistorialMedico", "InsertarHistorial", HttpMethod.Post, historialApi);
+                            // 4. Insertar en la tabla [HistorialMedico]
+                            await _apiProxy.SendRequestAsync<object>("HistorialMedico", "InsertarHistorialMedico", HttpMethod.Post, historialApi);
+                        }
 
                         TempData["MensajeExito"] = "Paciente y expediente médico creados con éxito.";
                         return RedirectToAction("Index");
 
-                        ///
-                        TempData["MensajeExito"] = $"Paciente {paciente.NombreCompleto} registrado correctamente.";
-                        return RedirectToAction(nameof(Index));
                     }
                 }
                 catch (Exception ex)
@@ -144,9 +147,11 @@ namespace ConsultorioVerde.Web.Controllers
             {
                 try
                 {
+                    var idUsuarioLogueado = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.Identity.Name;
+
                     // Actualizamos datos de auditoría
                     paciente.FechaModificacion = DateTime.Now;
-                    paciente.UsuarioModificacion = "WebUser";
+                    paciente.UsuarioModificacion = idUsuarioLogueado;
 
                     // Importante: Tu API usa PUT según el curl
                     var respuesta = await _apiProxy.SendRequestAsync<object>("Paciente", "ActualizarPaciente", HttpMethod.Put, paciente);
@@ -172,16 +177,17 @@ namespace ConsultorioVerde.Web.Controllers
             try
             {
                 // 1. Obtenemos la lista para encontrar al paciente por ID
-                // Nota: Si tienes un endpoint 'ObtenerPacientePorId', sería más eficiente usar ese.
                 var pacientes = await _apiProxy.SendRequestAsync<List<PacienteViewModel>>("Paciente", "ListarPaciente", HttpMethod.Post);
                 var paciente = pacientes?.FirstOrDefault(p => p.IdPaciente == id);
 
                 if (paciente != null)
                 {
+                    var idUsuarioLogueado = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.Identity.Name;
+
                     // 2. Modificamos el estado y la auditoría
                     paciente.Activo = activo;
                     paciente.FechaModificacion = DateTime.Now;
-                    paciente.UsuarioModificacion = "WebUser";
+                    paciente.UsuarioModificacion = idUsuarioLogueado;
 
                     // 3. Enviamos la actualización mediante PUT
                     var respuesta = await _apiProxy.SendRequestAsync<object>("Paciente", "ActualizarEstadoPaciente", HttpMethod.Put, paciente);

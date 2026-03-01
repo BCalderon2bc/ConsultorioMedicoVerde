@@ -17,30 +17,32 @@
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
                         <div class="row">
-                            @* Selección de Paciente *@
+                            @* Combo de Pacientes *@
                             <div class="col-md-12 mb-3">
                                 <label class="form-label fw-bold">Paciente</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light"><i class="bi bi-person-fill text-success"></i></span>
-                                    <select asp-for="IdPaciente" class="form-select border-start-0"
+                                <div class="input-group shadow-sm">
+                                    <span class="input-group-text bg-white border-verde-subtle">
+                                        <i class="bi bi-person-badge text-success"></i>
+                                    </span>
+                                    <select asp-for="IdPaciente" class="form-select border-start-0 border-verde-subtle"
                                             asp-items="@(new SelectList((System.Collections.IEnumerable)ViewBag.Pacientes, "IdPaciente", "NombreCompleto"))" required>
-                                        @* <option value="">-- Seleccione un Paciente --</option> *@
+                                        @* <option value="">-- Seleccione Paciente (Nombre - Cédula) --</option> *@
                                     </select>
                                 </div>
-                                <span asp-validation-for="IdPaciente" class="text-danger small"></span>
                             </div>
 
-                            @* Selección de Médico *@
+                            @* Combo de Médicos *@
                             <div class="col-md-12 mb-3">
-                                <label class="form-label fw-bold">Médico Especialista</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light"><i class="bi bi-person-badge-fill text-success"></i></span>
-                                    <select asp-for="IdMedico" class="form-select border-start-0"
-                                            asp-items="@(new SelectList(ViewBag.Medicos, "IdMedico", "NombreCompleto"))" required>
-                                        @* <option value="">-- Seleccione un Médico --</option> *@
-                                    </select>
+                                <label class="form-label fw-bold">Médico</label>
+                                <div class="input-group shadow-sm">
+                                    <span class="input-group-text bg-white border-verde-subtle">
+                                        <i class="bi bi-person-badge-fill text-success"></i>
+                                    </span>
+                                    <select asp-for="IdMedico" class="form-select border-start-0 border-verde-subtle"
+                                            asp-items="@(new SelectList((System.Collections.IEnumerable)ViewBag.Medicos, "IdMedico", "NombreConEspecialidad"))" required>
+@*                                         <option value="">-- Seleccione Médico (Nombre - Especialidad) --</option>
+ *@                                    </select>
                                 </div>
-                                <span asp-validation-for="IdMedico" class="text-danger small"></span>
                             </div>
 
                             @* Fecha de la Cita *@
