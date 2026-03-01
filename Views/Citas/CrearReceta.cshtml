@@ -1,0 +1,79 @@
+﻿@model RecetaViewModel
+
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card shadow border-0">
+                <div class="card-header bg-success text-white py-3 text-center">
+                    <h5 class="mb-0"><i class="bi bi-prescription2 me-2"></i>Nueva Receta Médica</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="GuardarReceta" method="post">
+                        <input type="hidden" asp-for="IdConsulta" />
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Medicamento</label>
+                            <input asp-for="Medicamento" class="form-control border-success-subtle" placeholder="Nombre y presentación..." required />
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Dosis</label>
+                                <input asp-for="Dosis" class="form-control border-success-subtle" placeholder="Ej: 500mg" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Frecuencia</label>
+                                <input asp-for="Frecuencia" class="form-control border-success-subtle" placeholder="Ej: Cada 8 horas" />
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Duración</label>
+                            <input asp-for="Duracion" class="form-control border-success-subtle" placeholder="Ej: 7 días" />
+                        </div>
+
+                        <div class="d-flex justify-content-between pt-3 border-top">
+                            <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+                            <button type="submit" class="btn btn-success px-5">
+                                <i class="bi bi-check-circle me-1"></i> Guardar Receta
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Leemos si acabamos de guardar una receta para esta consulta
+            var idConsulta = '@TempData["RecetaGuardadaIdConsulta"]';
+
+            if (idConsulta && idConsulta !== '') {
+                Swal.fire({
+                    title: '¡Medicamento Guardado!',
+                    text: "¿Desea agregar otro medicamento a esta misma receta?",
+                    icon: 'success',
+                    showCancelButton: true,
+                    confirmButtonColor: '#208b3a',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: '<i class="bi bi-plus-circle me-1"></i> Sí, agregar otro',
+                    cancelButtonText: 'No, finalizar receta',
+                    allowOutsideClick: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Se queda en la pantalla actual (limpia el formulario al recargar)
+                        window.location.href = '@Url.Action("CrearReceta", "Citas")?idConsulta=' + idConsulta;
+                    } else {
+                        // Se sale a la agenda principal
+                        window.location.href = '@Url.Action("Index", "Citas")';
+                    }
+                });
+            }
+        });
+    </script>
+}

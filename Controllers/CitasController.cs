@@ -1,9 +1,14 @@
-﻿using ConsultorioVerde.Web.Models;
+﻿using ConsultorioMedicoVerde.Models;
+using ConsultorioVerde.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace ConsultorioVerde.Web.Controllers
 {
+    public class RespuestaConsulta
+    {
+        public int idConsulta { get; set; }
+    }
     public class CitasController : Controller
     {
         private readonly ApiServiceProxy _apiProxy;
@@ -13,22 +18,32 @@ namespace ConsultorioVerde.Web.Controllers
             _apiProxy = apiService;
         }
 
-        public async Task<IActionResult> Index(string buscar, string filtro)
+        public async Task<IActionResult> Index(string buscar, string filtro, DateTime? fechaInicio, DateTime? fechaFin)
         {
+            // Si no vienen fechas, usamos DateTime.Today (media noche de hoy)
+            DateTime fInicio = fechaInicio ?? DateTime.Today;
+            DateTime fFin = fechaFin ?? DateTime.Today;
+
+            if (fechaFin == null)
+                ViewBag.FechaFin = DateTime.Today.ToString("yyyy-MM-dd");
+            else
+                ViewBag.FechaFin = fechaFin;
+
+            // 1. Configurar el objeto de búsqueda con valores por defecto o seleccionados
             var busqueda = new CitaViewModel
             {
+                IdCita = 0,
                 NombreMedico = null,
                 NombrePaciente = null,
                 Estado = null,
-                FechaInicio = DateTime.Parse("2020-02-27 14:00:00.000"),
-                FechaFin = DateTime.Parse("2025-02-27 14:00:00.000"),
+                // Si el usuario no elige fecha, usamos un rango muy amplio
+                FechaInicio = fechaInicio ?? DateTime.Now,
+                FechaFin = fechaFin ?? DateTime.Now,
                 FechaCita = DateTime.Now,
 
             };
 
-            // var busqueda = new { idCita = 0, activo = true, fechaInicio = DateTime.Now };
-
-
+            // 2. Mapear el texto de búsqueda según el filtro seleccionado
             if (!string.IsNullOrEmpty(buscar))
             {
                 if (filtro == "Nombre Médico")
@@ -39,38 +54,35 @@ namespace ConsultorioVerde.Web.Controllers
                     busqueda.Estado = buscar;
             }
 
-            // Consumir el API de ListarMedico
+            // 3. Consumir el API de ListarCitaMedica con el objeto filtrado
             var citas = await _apiProxy.SendRequestAsync<List<CitaViewModel>>("CitaMedica", "ListarCitaMedica", HttpMethod.Post, busqueda);
 
-            // Persistencia para la vista
-            ViewBag.Buscar = buscar;
-            ViewBag.Filtro = filtro;
-
-//            return View(lista ?? new List<MedicoViewModel>());
-
-            // 1. Obtener Citas (usando el objeto vacío según tu CURL)
-          //  var filtro = new { idCita = 0, activo = true };
-           // var citas = await _apiProxy.SendRequestAsync<List<CitaViewModel>>("CitaMedica", "ListarCitaMedica", HttpMethod.Post, filtro);
-
-            // 2. Obtener Pacientes para cruzar nombres
+            // 4. Obtener catálogos para cruzar nombres (Pacientes y Médicos)
             var pacientes = await _apiProxy.SendRequestAsync<List<PacienteViewModel>>("Paciente", "ListarPaciente", HttpMethod.Post, new { });
-
-            // 3. Obtener Médicos para cruzar nombres
             var medicos = await _apiProxy.SendRequestAsync<List<MedicoViewModel>>("Medico", "ListarMedico", HttpMethod.Post, new { });
 
-            // 4. Cruzar la información (Mapeo)
+            // 5. Cruzar la información (Mapeo de Nombres)
             if (citas != null)
             {
                 foreach (var cita in citas)
                 {
-                    cita.NombrePaciente = pacientes?.FirstOrDefault(p => p.IdPaciente == cita.IdPaciente)?.NombreCompleto ?? "Desconocido";
-                    cita.NombreMedico = medicos?.FirstOrDefault(m => m.IdMedico == cita.IdMedico)?.NombreCompleto ?? "Desconocido";
+                    var p = pacientes?.FirstOrDefault(x => x.IdPaciente == cita.IdPaciente);
+                    var m = medicos?.FirstOrDefault(x => x.IdMedico == cita.IdMedico);
+
+                    cita.NombrePaciente = p != null ? $"{p.Nombre} {p.Apellido}" : "Desconocido";
+                    cita.NombreMedico = m != null ? $"{m.Nombre} {m.Apellido}" : "Desconocido";
                 }
             }
 
+            // 6. Persistencia para que los filtros se mantengan visibles en la vista
+            ViewBag.Buscar = buscar;
+            ViewBag.Filtro = filtro;
+
+            ViewBag.FechaInicio = fInicio.ToString("yyyy-MM-dd");
+            ViewBag.FechaFin = fFin.ToString("yyyy-MM-dd");
+
             return View(citas ?? new List<CitaViewModel>());
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Crear(CitaViewModel citaMedica)
@@ -176,5 +188,135 @@ namespace ConsultorioVerde.Web.Controllers
 
             return View(new CitaViewModel { FechaCita = DateTime.Now });
         }
+
+
+        ///Consultas medicas
+
+        // Asegúrate de que el nombre sea "Atender" y reciba el "id"
+        public async Task<IActionResult> Atender(int id)
+        {
+            if (id == 0) return RedirectToAction("Index");
+
+            // 1. Obtener todas las citas
+            var filtro = new { idCita = id};
+            List<CitaViewModel> citas = await _apiProxy.SendRequestAsync<List<CitaViewModel>>("CitaMedica", "ListarCitaMedica", HttpMethod.Post, filtro);
+
+            var cita = citas.Where((e)=>e.IdCita == id).ToList();
+            if (!cita.Any()) return NotFound();
+
+            // 2. Mapear al modelo de la vista de Consulta
+            var consulta = new ConsultaViewModel
+            {
+                IdCita = cita.First().IdCita,
+                NombrePaciente = cita.First().NombrePaciente,
+                NombreMedico = cita.First().NombreMedico,
+                MotivoCita = cita.First().Motivo,
+                FechaConsulta = DateTime.Now,
+            };
+
+            return View(consulta); // Esto busca la vista Views/Citas/Atender.cshtml
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> GuardarConsulta(ConsultaViewModel modelo)
+        {
+            
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // 1. Objeto para [InsertarConsulta] según tu CURL
+                    var consultaApi = new
+                    {
+                        idCita = modelo.IdCita,
+                        fechaConsulta = DateTime.Now,
+                        diagnostico = modelo.Diagnostico,
+                        tratamiento = modelo.Tratamiento,
+                        notas = modelo.Notas,
+                        fechaCreacion = DateTime.Now,
+                        usuarioCreacion = User.Identity?.Name ?? "Medico_User",
+                        fechaModificacion = DateTime.Now,
+                        usuarioModificacion = User.Identity?.Name ?? "Medico_User"
+                    };
+
+                    // 2. Ejecutar Inserción de la Consulta
+                    var respuesta = await _apiProxy.SendRequestAsync<RespuestaConsulta>(
+                        "Consulta",
+                        "InsertarConsulta",
+                        HttpMethod.Post,
+                        consultaApi);
+
+                    if (respuesta != null)
+                    {
+                        // 2. Aquí ya puedes obtener el 8 directamente
+                        int idGenerado = respuesta.idConsulta;
+
+                        // 3. PERSISTENCIA: Pasamos el ID al Index para el Modal
+                        TempData["ConsultaGuardadaId"] = idGenerado;
+                        TempData["MensajeExito"] = "Consulta registrada correctamente.";
+
+                        return RedirectToAction("Index");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Error al procesar la consulta: " + ex.Message);
+                }
+            }
+
+            // Si llegamos aquí, algo falló, recargamos la vista de Atender
+            return View("Atender", modelo);
+        }
+
+
+        // GET: Citas/CrearReceta?idConsulta=5
+        public IActionResult CrearReceta(int idConsulta)
+        {
+            return View(new RecetaViewModel { IdConsulta = idConsulta });
+        }
+
+        // POST: Citas/GuardarReceta
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> GuardarReceta(RecetaViewModel modelo)
+        {
+            try
+            {
+                // Objeto exacto según tu CURL de RecetaMedica
+                var recetaApi = new
+                {
+                   // idReceta = 0,
+                    idConsulta = modelo.IdConsulta,
+                    medicamento = modelo.Medicamento,
+                    dosis = modelo.Dosis,
+                    frecuencia = modelo.Frecuencia,
+                    duracion = modelo.Duracion,
+                   // fechaCreacion = DateTime.Now,
+                    usuarioCreacion = User.Identity?.Name ?? "Medico_User",
+                   // fechaModificacion = DateTime.Now,
+                   // usuarioModificacion = User.Identity?.Name ?? "Medico_User"
+                };
+
+                var respuesta = await _apiProxy.SendRequestAsync<object>("RecetaMedica", "InsertarRecetaMedica", HttpMethod.Post, recetaApi);
+
+                if (respuesta != null)
+                {
+                    // Guardamos el IdConsulta para que el modal sepa a qué consulta volver si quiere agregar otro
+                    TempData["RecetaGuardadaIdConsulta"] = modelo.IdConsulta;
+                    TempData["MensajeExito"] = "Medicamento agregado correctamente.";
+
+                    // Redirigimos a la misma pantalla (GET) para procesar el modal
+                    return RedirectToAction("CrearReceta", new { idConsulta = modelo.IdConsulta });
+                }
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Error al guardar medicamento: " + ex.Message);
+            }
+
+            return View(modelo);
+        }
+
     }
 }

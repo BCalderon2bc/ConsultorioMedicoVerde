@@ -1,0 +1,97 @@
+﻿@model ConsultaViewModel
+
+<div class="container mt-4">
+    <div class="card shadow-lg border-0 border-top border-success border-4">
+        <div class="card-body p-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="text-success fw-bold"><i class="bi bi- hospital me-2"></i>Ficha de Atención Médica</h3>
+                <span class="text-muted small">Fecha: @DateTime.Now.ToString("dd/MM/yyyy")</span>
+            </div>
+
+            @* Datos del Paciente *@
+            <div class="row g-3 p-3 bg-light rounded-3 mb-4 shadow-sm">
+                <div class="col-md-4">
+                    <label class="text-muted small fw-bold">PACIENTE ATENDIDO</label>
+                    <div class="h5 mb-0 text-dark">@Model.NombrePaciente</div>
+                </div>
+                <div class="col-md-4 border-start ps-4">
+                    <label class="text-muted small fw-bold">MÉDICO RESPONSABLE</label>
+                    <div class="h6 mb-0">@Model.NombreMedico</div>
+                </div>
+                <div class="col-md-4 border-start ps-4 text-end">
+                    <label class="text-muted small fw-bold">CITA DE REFERENCIA</label>
+                    <div class="text-secondary">#@Model.IdCita</div>
+                </div>
+            </div>
+
+            <form asp-action="GuardarConsulta" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="IdCita" />
+
+                <div class="row">
+                    @* Campo de Diagnóstico *@
+                    <div class="col-md-12 mb-4">
+                        <label class="form-label fw-bold">Diagnóstico Clínico</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-success-subtle"><i class="bi bi-activity text-success"></i></span>
+                            <textarea asp-for="Diagnostico" class="form-control border-start-0 border-success-subtle" rows="5"
+                                      placeholder="Describa detalladamente el estado del paciente..."></textarea>
+                        </div>
+                    </div>
+
+                    @* Campo de Tratamiento *@
+                    <div class="col-md-12 mb-4">
+                        <label class="form-label fw-bold">Plan de Tratamiento / Prescripción</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-success-subtle"><i class="bi bi-capsule-pill text-success"></i></span>
+                            <textarea asp-for="Tratamiento" class="form-control border-start-0 border-success-subtle" rows="5"
+                                      placeholder="Indique medicamentos, dosis y duración del tratamiento..."></textarea>
+                        </div>
+                    </div>
+
+                    @* Notas Internas *@
+                    <div class="col-md-12 mb-4">
+                        <label class="form-label fw-bold text-muted small">NOTAS Y OBSERVACIONES ADICIONALES</label>
+                        <textarea asp-for="Notas" class="form-control bg-light" rows="2" placeholder="Observaciones privadas..."></textarea>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-3">
+                    <a asp-action="Index" class="btn btn-outline-secondary px-4">
+                        <i class="bi bi-x-circle me-1"></i> Descartar
+                    </a>
+                    <button type="submit" class="btn btn-success btn-lg px-5 shadow">
+                        <i class="bi bi-cloud-arrow-up me-1"></i> Finalizar y Guardar Consulta
+                    </button>
+                </div>
+            </form> 
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var idConsulta = '@TempData["ConsultaGuardadaId"]';
+
+            if (idConsulta && idConsulta !== '') {
+                Swal.fire({
+                    title: '¡Consulta Guardada!',
+                    text: "¿Desea emitir una receta médica para este paciente?",
+                    icon: 'success',
+                    showCancelButton: true,
+                    confirmButtonColor: '#208b3a',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: '<i class="bi bi-file-earmark-medical"></i> Sí, crear receta',
+                    cancelButtonText: 'No, finalizar',
+                    allowOutsideClick: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '@Url.Action("CrearReceta", "Citas")?idConsulta=' + idConsulta;
+                    }
+                });
+            }
+        });
+    </script>
+}
