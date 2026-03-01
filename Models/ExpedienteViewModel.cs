@@ -7,8 +7,8 @@ namespace ConsultorioVerde.Web.Models
         public PacienteViewModel Paciente { get; set; }
         public List<HistorialMedicoViewModel> Historial { get; set; }
         public List<CitaViewModel> Citas { get; set; }
-        //public List<> Consultas { get; set; }
-        //public List<Receta> Recetas { get; set; }
+        public List<ConsultaViewModel> Consultas { get; set; }
+        public List<RecetaViewModel> Recetas { get; set; }
 
     }
 }

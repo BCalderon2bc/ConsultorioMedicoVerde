@@ -72,5 +72,11 @@ namespace ConsultorioVerde.Web.Models
         [JsonPropertyName("activo")]
         [Display(Name = "Estado")]
         public bool? Activo { get; set; } = false; // bit en SQL
+
+        // Datos del Historial (Campos de tu nueva tabla)
+        public string Alergias { get; set; }
+        public string EnfermedadesPrevias { get; set; }
+        public string CirugiasPrevias { get; set; }
+        public string Observaciones { get; set; }
     }
 }

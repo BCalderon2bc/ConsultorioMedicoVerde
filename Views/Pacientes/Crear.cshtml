@@ -33,7 +33,7 @@
                     <div class="col-md-4 mb-3">
                         <label class="form-label fw-bold">Género</label>
                         <select asp-for="Genero" class="form-select border-verde">
-                            <option value="">Seleccione...</option>
+                            @* <option value="">Seleccione...</option> *@
                             <option value="M">Masculino</option>
                             <option value="F">Femenino</option>
                             <option value="O">Otro</option>
@@ -54,6 +54,37 @@
                     </div>
                 </div>
 
+                @* --- Debajo de la dirección, agregamos el Historial --- *@
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card border-info bg-light shadow-sm">
+                            <div class="card-header bg-info text-white">
+                                <h6 class="mb-0"><i class="bi bi-clipboard2-pulse-fill me-2"></i>Historial Médico Inicial</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-12 mb-3">
+                                        <label class="form-label fw-bold">Alergias Conocidas</label>
+                                        <input asp-for="Alergias" class="form-control border-info" placeholder="Medicamentos, alimentos, etc." />
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-bold">Enfermedades Previas</label>
+                                        <textarea asp-for="EnfermedadesPrevias" class="form-control border-info" rows="3" placeholder="Diabetes, Hipertensión, etc."></textarea>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-bold">Cirugías Previas</label>
+                                        <textarea asp-for="CirugiasPrevias" class="form-control border-info" rows="3" placeholder="Detalle intervenciones anteriores..."></textarea>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label fw-bold">Observaciones Generales</label>
+                                        <input asp-for="Observaciones" class="form-control border-info" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="border-top mt-4 pt-3 d-flex justify-content-between align-items-center">
                     <a asp-action="Index" class="btn btn-outline-secondary px-4 m-2">
                         <i class="bi bi-arrow-left me-1"></i>Regresar
@@ -66,6 +97,10 @@
         </div>
     </div>
 </div>
+
+
+
+
 
 @section Scripts {
     @{

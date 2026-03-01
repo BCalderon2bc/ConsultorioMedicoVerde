@@ -1,10 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ConsultorioVerde.Web.Models;
+﻿using ConsultorioVerde.Web.Models;
+using Microsoft.AspNetCore.Mvc;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace ConsultorioVerde.Web.Controllers
-{   
-
+{
+    public class RespuestaConsultaPaciente
+    {
+        public int idPaciente { get; set; }
+    }
     public class PacientesController : Controller
     {
         private readonly ApiServiceProxy _apiProxy;
@@ -82,10 +86,32 @@ namespace ConsultorioVerde.Web.Controllers
                     paciente.UsuarioModificacion = "WebUser";
 
                     // Enviamos a la API
-                    var respuesta = await _apiProxy.SendRequestAsync<object>("Paciente", "InsertarPaciente", HttpMethod.Post, paciente);
+                    var respuesta = await _apiProxy.SendRequestAsync<RespuestaConsultaPaciente>("Paciente", "InsertarPaciente", HttpMethod.Post, paciente);
 
                     if (respuesta != null)
                     {
+                        // 2. Extraer el ID generado del paciente (ajusta según tu respuesta API)
+                        int idNuevoPaciente = respuesta.idPaciente;
+
+                        // 3. Crear objeto Historial con el ID del paciente
+                        var historialApi = new
+                        {
+                            idPaciente = idNuevoPaciente,
+                            alergias = paciente.Alergias,
+                            enfermedadesPrevias = paciente.EnfermedadesPrevias,
+                            cirugiasPrevias = paciente.CirugiasPrevias,
+                            observaciones = paciente.Observaciones,
+                            fechaCreacion = DateTime.Now,
+                            usuarioCreacion = User.Identity.Name
+                        };
+
+                        // 4. Insertar en la tabla [HistorialMedico]
+                        await _apiProxy.SendRequestAsync<object>("HistorialMedico", "InsertarHistorial", HttpMethod.Post, historialApi);
+
+                        TempData["MensajeExito"] = "Paciente y expediente médico creados con éxito.";
+                        return RedirectToAction("Index");
+
+                        ///
                         TempData["MensajeExito"] = $"Paciente {paciente.NombreCompleto} registrado correctamente.";
                         return RedirectToAction(nameof(Index));
                     }
