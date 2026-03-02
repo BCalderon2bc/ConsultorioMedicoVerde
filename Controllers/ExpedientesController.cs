@@ -59,37 +59,31 @@ namespace ConsultorioVerde.Web.Controllers
             return Redirect(urlReporte);
         }
 
-        //public async Task<IActionResult> ExportarPdf(string identificacion)
-        //{
+        public async Task<IActionResult> ExportarPdf(string identificacion)
+        {
 
-        //    const filtroRequest = { Filtro: filtro };
+            //const filtroRequest = { Filtro: filtro };
 
-        //var modelo = await _apiProxy.SendRequestAsync<ExpedienteViewModel>(
-        //         "Expediente",
-        //         "ObtenerExpediente",
-        //         HttpMethod.Post,
-        //         filtroRequest
-        //     );
+          //await _apiProxy.SendRequestAsync<ExpedienteViewModel>(
+          //       "Expediente",
+          //       "ObtenerExpediente",
+          //       HttpMethod.Post,
+          //       filtroRequest
+          //   );
 
-        //    //var modelo = await ObtenerExpedienteCompleto(identificacion);
+            //var modelo = await ObtenerExpedienteCompleto(identificacion);
 
-        //    if (modelo == null) return NotFound();
+            //if (modelo == null) return NotFound();
 
-        //    // 2. Retornar la vista como PDF
-        //    return new ViewAsPdf("VistaReportePdf", modelo)
-        //    {
-        //        FileName = $"Expediente_{identificacion}.pdf",
-        //        PageOrientation = Rotativa.AspNetCore.Options.Orientation.Portrait,
-        //        PageSize = Rotativa.AspNetCore.Options.Orientation.A4,
-        //        CustomSwitches = "--page-offset 0 --footer-center [page]/[toPage] --footer-font-size 9"
-        //    };
-        //}
+            // 2. Retornar la vista como PDF
+            return new ViewAsPdf("VistaReportePdf", "")
+            {
+                FileName = $"Expediente_{identificacion}.pdf",
+                    PageOrientation = Rotativa.AspNetCore.Options.Orientation.Portrait,
+                    //PageSize = Rotativa.AspNetCore.Options.Orientation.Landscape,
+                    CustomSwitches = "--page-offset 0 --footer-center [page]/[toPage] --footer-font-size 9"
+                };
+            }   
 
-
-
-
-
-
-
-    }
+}
 }

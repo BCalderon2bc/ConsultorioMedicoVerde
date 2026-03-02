@@ -98,7 +98,54 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="~/js/validaciones.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="~/js/Messages.js"></script>
+    
+    <script src="~/js/Messages.js" asp-append-version="true"></script>
+    <script src="~/js/Messages.js" asp-append-version="true"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // 1. Caso: Se guardó una Consulta (Preguntar por Receta)
+            var idConsulta = '@TempData["ConsultaGuardadaId"]';
+            if (idConsulta && idConsulta !== '') {
+                mostrarDialogoConfirmacion({
+                    titulo: '¡Consulta Guardada!',
+                    texto: '¿Desea emitir una receta médica para este paciente?',
+                    icono: 'success',
+                    textoConfirmar: 'Sí, crear receta',
+                    textoCancelar: 'No, finalizar',
+                    urlConfirmar: '@Url.Action("CrearReceta", "Citas")?idConsulta=' + idConsulta,
+                    urlCancelar: '@Url.Action("Index", "Citas")'
+                });
+            }
+
+            // 2. Caso: Se guardó un Medicamento (Preguntar si desea otro)
+            var idRecetaConsulta = '@TempData["RecetaGuardadaIdConsulta"]';
+            if (idRecetaConsulta && idRecetaConsulta !== '') {
+                mostrarDialogoConfirmacion({
+                    titulo: '¡Medicamento Guardado!',
+                    texto: '¿Desea agregar otro medicamento a esta misma receta?',
+                    icono: 'success',
+                    textoConfirmar: 'Sí, agregar otro',
+                    textoCancelar: 'No, finalizar receta',
+                    urlConfirmar: '@Url.Action("CrearReceta", "Citas")?idConsulta=' + idRecetaConsulta,
+                    urlCancelar: '@Url.Action("Index", "Citas")'
+                });
+            }
+
+            // 3. Caso: Mensaje de éxito genérico (Pacientes, Médicos, etc.)
+            var mensajeExito = '@TempData["MensajeExito"]';
+            if (mensajeExito && mensajeExito !== '') {
+                Swal.fire({
+                    title: '¡Operación Exitosa!',
+                    text: mensajeExito,
+                    icon: 'success',
+                    confirmButtonColor: '#208b3a'
+                });
+            }
+        });
+    </script>
+
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

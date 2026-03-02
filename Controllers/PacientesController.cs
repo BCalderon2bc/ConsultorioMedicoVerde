@@ -110,6 +110,9 @@ namespace ConsultorioVerde.Web.Controllers
                                 usuarioCreacion = User.Identity.Name
                             };
 
+                            //TempData["ConsultaGuardadaId"] = idNuevoPaciente; // Esto activará el diálogo de receta en el Layout
+
+                            TempData["MensajeExito"] = "El paciente se registró correctamente.";
                             // 4. Insertar en la tabla [HistorialMedico]
                             await _apiProxy.SendRequestAsync<object>("HistorialMedico", "InsertarHistorialMedico", HttpMethod.Post, historialApi);
                         }

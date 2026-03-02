@@ -22,7 +22,7 @@
             data: JSON.stringify(filtroRequest),
             success: function (data) {
                 if (!data || !data.paciente) {
-                    alert("Paciente no encontrado");
+                    message.success("Paciente no encontrado");
                     return;
                 }
 
@@ -38,7 +38,7 @@
             },
             error: function (xhr, status, error) {
                 console.error("Error AJAX:", status, error, xhr.responseText);
-                alert("Ocurrió un error al obtener el expediente");
+                message.err("Ocurrió un error al obtener el expediente");
             }
         });
     });
@@ -196,17 +196,35 @@
     }
 
     /* ================================
-       GENERAR REPORTE
+       GENERAR REPORTE (Corregido)
     ================================== */
-    btnReporte.addEventListener("click", function () {
+    //btnReporte.addEventListener("click", function () {
 
-        if (!pacienteActualId) {
-            alert("Debe seleccionar un paciente primero");
-            return;
-        }
+    //    if (!pacienteActualId || pacienteActualId === "0") {
+    //        // Usamos SweetAlert para un error elegante
+    //        Swal.fire({
+    //            title: "Paciente no seleccionado",
+    //            text: "Por favor, busque y seleccione un paciente para generar su expediente.",
+    //            icon: "warning",
+    //            confirmButtonColor: "#208b3a"
+    //        });
+    //        return;
+    //    }
 
-        window.open(`/Expediente/GenerarReporte?idPaciente=${pacienteActualId}`, "_blank");
-    });
+    //    // Usamos el Diálogo Global para confirmar la descarga
+    //    mostrarDialogoConfirmacion({
+    //        titulo: '¿Generar Expediente PDF?',
+    //        texto: 'Se abrirá el reporte clínico en una nueva pestaña.',
+    //        icono: 'question',
+    //        textoConfirmar: '<i class="bi bi-file-pdf"></i> Generar PDF',
+    //        textoCancelar: 'Cancelar',
+    //        callbackConfirmar: function () {
+    //            // Construimos la URL correctamente
+    //            const url = `/Expediente/GenerarReporte?idPaciente=${pacienteActualId}`;
+    //            window.open(url, "_blank");
+    //        }
+    //    });
+    //});
 
     /* ================================
        FORMATEAR FECHA
