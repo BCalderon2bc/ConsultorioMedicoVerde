@@ -93,7 +93,7 @@ namespace ConsultorioVerde.Web.Controllers
                             await _apiProxy.SendRequestAsync<object>("HistorialMedico", "InsertarHistorialMedico", HttpMethod.Post, historialApi);
                         }
 
-                        TempData["MensajeExito"] = $"Paciente '{paciente.Nombre} {paciente.Apellido}' registrado exitosamente con su historial clínico.";
+                        TempData["MensajeExito"] = $"Paciente '{paciente.Nombre} {paciente.Apellido}' registrado exitosamente.";
                         return RedirectToAction("Index");
                     }
                 }

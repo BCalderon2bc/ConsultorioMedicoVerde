@@ -119,8 +119,9 @@ namespace ConsultorioVerde.Web.Controllers
 
                     medico.FechaModificacion = DateTime.Now;
                     medico.UsuarioModificacion = usuarioLogueado;
+                    medico.FechaCreacion = DateTime.Now;
 
-                    var respuesta = await _apiProxy.SendRequestAsync<object>("Medico", "ActualizarMedico", HttpMethod.Put, medico);
+                    var respuesta = await _apiProxy.SendRequestAsync<object>("Medico",   "ActualizarMedico",   HttpMethod.Put, medico);
 
                     if (respuesta != null)
                     {
