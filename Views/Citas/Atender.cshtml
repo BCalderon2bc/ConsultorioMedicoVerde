@@ -68,30 +68,3 @@
         </div>
     </div>
 </div>
-
-@section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            var idConsulta = '@TempData["ConsultaGuardadaId"]';
-
-            if (idConsulta && idConsulta !== '') {
-                Swal.fire({
-                    title: '¡Consulta Guardada!',
-                    text: "¿Desea emitir una receta médica para este paciente?",
-                    icon: 'success',
-                    showCancelButton: true,
-                    confirmButtonColor: '#208b3a',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: '<i class="bi bi-file-earmark-medical"></i> Sí, crear receta',
-                    cancelButtonText: 'No, finalizar',
-                    allowOutsideClick: false
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = '@Url.Action("CrearReceta", "Citas")?idConsulta=' + idConsulta;
-                    }
-                });
-            }
-        });
-    </script>
-}

@@ -102,31 +102,50 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // 1. Caso: Se guardó una Consulta (Preguntar por Receta)
-            var idConsulta = @TempData["ConsultaGuardadaId"];
+           // 1. Caso: Se guardó una Consulta (CORREGIDO CON SERIALIZE)
+            var idConsulta = @Json.Serialize(TempData["ConsultaGuardadaId"]);
+
             if (idConsulta && idConsulta !== '') {
-                mostrarDialogoConfirmacion({
-                    titulo: '¡Consulta Guardada!',
-                    texto: '¿Desea emitir una receta médica para este paciente?',
-                    icono: 'success',
-                    textoConfirmar: 'Sí, crear receta',
-                    textoCancelar: 'No, finalizar',
-                    urlConfirmar: '@Url.Action("CrearReceta", "Citas")?idConsulta=' + idConsulta,
-                    urlCancelar: '@Url.Action("Index", "Citas")'
+                Swal.fire({
+                    title: '¡Consulta Guardada!',
+                    text: "¿Desea emitir una receta médica para este paciente?",
+                    icon: 'success',
+                    showCancelButton: true,
+                    confirmButtonColor: '#208b3a',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: '<i class="bi bi-file-earmark-medical"></i> Sí, crear receta',
+                    cancelButtonText: 'No, finalizar',
+                    allowOutsideClick: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '@Url.Action("CrearReceta", "Citas")?idConsulta=' + idConsulta;
+                    }
                 });
+             
             }
 
             // 2. Caso: Se guardó un Medicamento (Preguntar si desea otro)
             var idRecetaConsulta = @Json.Serialize(TempData["RecetaGuardadaIdConsulta"]);
-            if (idRecetaConsulta && idRecetaConsulta !== '') {
-                mostrarDialogoConfirmacion({
-                    titulo: '¡Medicamento Guardado!',   
-                    texto: '¿Desea agregar otro medicamento a esta misma receta?',
-                    icono: 'success',
-                    textoConfirmar: 'Sí, agregar otro',
-                    textoCancelar: 'No, finalizar receta',
-                    urlConfirmar: '@Url.Action("CrearReceta", "Citas")?idConsulta=' + idRecetaConsulta,
-                    urlCancelar: '@Url.Action("Index", "Citas")'
+
+            if (idRecetaConsulta !== null && idRecetaConsulta !== '') {
+                Swal.fire({
+                    title: '¡Medicamento Guardado!',
+                    text: '¿Desea agregar otro medicamento a esta misma receta?',
+                    icon: 'success',
+                    showCancelButton: true,
+                    confirmButtonColor: '#208b3a',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: '<i class="bi bi-plus-circle"></i> Sí, agregar otro',
+                    cancelButtonText: 'No, finalizar receta',
+                    allowOutsideClick: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Recargamos la misma página con el ID de la consulta
+                        window.location.href = '@Url.Action("CrearReceta", "Citas")?idConsulta=' + idRecetaConsulta;
+                    } else {
+                        // Si dice que no, lo mandamos al listado principal
+                        window.location.href = '@Url.Action("Index", "Citas")';
+                    }
                 });
             }
 

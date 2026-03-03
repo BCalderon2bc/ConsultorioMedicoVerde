@@ -15,19 +15,19 @@ namespace ConsultorioMedicoVerde.Models
         public string Medicamento { get; set; }
 
         [StringLength(50)]
-        public string Dosis { get; set; }
+        public string? Dosis { get; set; }
 
         [StringLength(50)]
-        public string Frecuencia { get; set; }
+        public string? Frecuencia { get; set; }
 
         [StringLength(50)]
-        public string Duracion { get; set; }
+        public string? Duracion { get; set; }
 
         // Campos de auditoría (opcionales para la vista, necesarios para el API)
         public DateTime? FechaCreacion { get; set; }
         public string? UsuarioCreacion { get; set; }
         public DateTime? FechaModificacion { get; set; }
-        public string UsuarioModificacion { get; set; }
+        public string? UsuarioModificacion { get; set; }
 
         // Propiedades auxiliares para mostrar información en la vista de receta
         public string? NombrePaciente { get; set; }

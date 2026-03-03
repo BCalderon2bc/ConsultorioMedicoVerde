@@ -225,8 +225,9 @@ namespace ConsultorioVerde.Web.Controllers
                     if (respuesta != null)
                     {
                         TempData["ConsultaGuardadaId"] = respuesta.idConsulta;
-                       // TempData["MensajeExito"] = "La consulta ha sido guardada correctamente.";
-                        return RedirectToAction("Index");
+                        return RedirectToAction(nameof(Index));
+
+                        // return RedirectToAction("Index");
                     }
                 }
                 catch (Exception ex)
@@ -237,6 +238,12 @@ namespace ConsultorioVerde.Web.Controllers
             return View("Atender", modelo);
         }
 
+
+        /// <summary>
+        /// Recetas Medicas
+        /// </summary>
+        /// <param name="idConsulta"></param>
+        /// <returns></returns>
         public IActionResult CrearReceta(int idConsulta)
         {
             return View(new RecetaViewModel { IdConsulta = idConsulta });
@@ -265,7 +272,7 @@ namespace ConsultorioVerde.Web.Controllers
                 if (respuesta != null)
                 {
                     TempData["RecetaGuardadaIdConsulta"] = modelo.IdConsulta;
-                    TempData["MensajeExito"] = "Medicamento agregado a la receta.";
+                    //return RedirectToAction("CrearReceta", modelo.IdConsulta);
                     return RedirectToAction("CrearReceta", new { idConsulta = modelo.IdConsulta });
                 }
             }

@@ -14,7 +14,7 @@
 
                         <div class="mb-3">
                             <label class="form-label fw-bold">Medicamento</label>
-                            <input asp-for="Medicamento" class="form-control border-success-subtle" />
+                            <input asp-for="Medicamento" class="form-control border-success-subtle" required />
                         </div>
 
                         <div class="row">
@@ -45,35 +45,3 @@
         </div>
     </div>
 </div>
-
-@section Scripts {
-    @* <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // Leemos si acabamos de guardar una receta para esta consulta
-            var idConsulta = '@TempData["RecetaGuardadaIdConsulta"]';
-
-            if (idConsulta && idConsulta !== '') {
-                Swal.fire({
-                    title: '¡Medicamento Guardado!',
-                    text: "¿Desea agregar otro medicamento a esta misma receta?",   
-                    icon: 'success',
-                    showCancelButton: true,
-                    confirmButtonColor: '#208b3a',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: '<i class="bi bi-plus-circle me-1"></i> Sí, agregar otro',
-                    cancelButtonText: 'No, finalizar receta',
-                    allowOutsideClick: false
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Se queda en la pantalla actual (limpia el formulario al recargar)
-                        window.location.href = '@Url.Action("CrearReceta", "Citas")?idConsulta=' + idConsulta;
-                    } else {
-                        // Se sale a la agenda principal
-                        window.location.href = '@Url.Action("Index", "Citas")';
-                    }
-                });
-            }
-        });
-    </script> *@
-}

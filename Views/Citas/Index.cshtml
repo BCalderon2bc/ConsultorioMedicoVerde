@@ -179,34 +179,3 @@
         </table>
     </div>
 </div>
-
-@section Scripts {
-    @* <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // Leemos el ID desde el TempData de C#
-            var idConsulta = '@TempData["ConsultaGuardadaId"]';
-
-            // Si hay un ID, significa que acabamos de guardar una consulta
-            if (idConsulta && idConsulta !== '0' && idConsulta !== '') {
-                Swal.fire({
-                    title: '¡Consulta Guardada!',
-                    text: "¿Desea emitir una receta médica para este paciente?",
-                    icon: 'success',
-                    showCancelButton: true,
-                    confirmButtonColor: '#208b3a', // Tu color verde
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: '<i class="bi bi-file-earmark-medical me-1"></i> Sí, crear receta',
-                    cancelButtonText: 'No, finalizar',
-                    allowOutsideClick: false // Obliga al médico a decidir
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Redirigimos a la vista de Receta pasando el ID de consulta
-                        window.location.href = '@Url.Action("CrearReceta", "Citas")?idConsulta=' + idConsulta;
-                    }
-                });
-            }
-        });
-    </script> *@
-}
