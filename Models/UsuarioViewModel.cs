@@ -21,19 +21,19 @@ namespace ConsultorioMedicoVerde.Models
         // Campos de auditoría
         public DateTime? FechaCreacion { get; set; }
 
-        public string UsuarioCreacion { get; set; }
+        public string? UsuarioCreacion { get; set; }
 
         public DateTime? FechaModificacion { get; set; }
 
-        public string UsuarioModificacion { get; set; }
+        public string? UsuarioModificacion { get; set; }
 
         public bool Activo { get; set; }
 
 
         // Propiedades de control para la lógica del login
-        public string Usuario { get; set; }
+        public string? Usuario { get; set; }
             
-        public string Contrasena { get; set; }
+        public string? Contrasena { get; set; }
 
     }
 

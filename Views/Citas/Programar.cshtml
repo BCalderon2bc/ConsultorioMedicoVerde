@@ -1,6 +1,9 @@
 ﻿@model ConsultorioVerde.Web.Models.CitaViewModel
 @{
     ViewData["Title"] = "Programar Cita Médica";
+    
+    // Inicialización de seguridad para evitar NullReference si el modelo viene vacío
+    var fechaPorDefecto = Model?.FechaCita ?? DateTime.Now;
 }
 
 <div class="container mt-4">
@@ -25,10 +28,11 @@
                                         <i class="bi bi-person-badge text-success"></i>
                                     </span>
                                     <select asp-for="IdPaciente" class="form-select border-start-0 border-verde-subtle"
-                                            asp-items="@(new SelectList((System.Collections.IEnumerable)ViewBag.Pacientes, "IdPaciente", "NombreCompleto"))" required>
-                                        @* <option value="">-- Seleccione Paciente (Nombre - Cédula) --</option> *@
+                                            asp-items="@(ViewBag.Pacientes != null ? new SelectList((System.Collections.IEnumerable)ViewBag.Pacientes, "IdPaciente", "NombreCompleto") : null)" required>
+                                        <option value="">-- Seleccione un Paciente --</option>
                                     </select>
                                 </div>
+                                <span asp-validation-for="IdPaciente" class="text-danger small"></span>
                             </div>
 
                             @* Combo de Médicos *@
@@ -39,10 +43,11 @@
                                         <i class="bi bi-person-badge-fill text-success"></i>
                                     </span>
                                     <select asp-for="IdMedico" class="form-select border-start-0 border-verde-subtle"
-                                            asp-items="@(new SelectList((System.Collections.IEnumerable)ViewBag.Medicos, "IdMedico", "NombreConEspecialidad"))" required>
-@*                                         <option value="">-- Seleccione Médico (Nombre - Especialidad) --</option>
- *@                                    </select>
+                                            asp-items="@(ViewBag.Medicos != null ? new SelectList((System.Collections.IEnumerable)ViewBag.Medicos, "IdMedico", "NombreConEspecialidad") : null)" required>
+                                        <option value="">-- Seleccione un Médico --</option>
+                                    </select>
                                 </div>
+                                <span asp-validation-for="IdMedico" class="text-danger small"></span>
                             </div>
 
                             @* Fecha de la Cita *@
@@ -50,9 +55,8 @@
                                 <label class="form-label fw-bold">Fecha de la Cita</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light"><i class="bi bi-calendar-check text-success"></i></span>
-                                    @* Usamos type="date" para que solo muestre el calendario *@
                                     <input type="date" id="fechaSolo" class="form-control border-start-0"
-                                           value="@Model.FechaCita?.ToString("yyyy-MM-dd")" required />
+                                           value="@fechaPorDefecto.ToString("yyyy-MM-dd")" required />
                                 </div>
                             </div>
 
@@ -61,9 +65,8 @@
                                 <label class="form-label fw-bold">Hora de la Cita</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light"><i class="bi bi-clock-fill text-success"></i></span>
-                                    @* Usamos type="time" para un selector de hora limpio (AM/PM) *@
                                     <input type="time" id="horaSolo" class="form-control border-start-0"
-                                           value="@Model.FechaCita?.ToString("HH:mm")" required />
+                                           value="@fechaPorDefecto.ToString("HH:mm")" required />
                                 </div>
                             </div>
 
@@ -75,18 +78,15 @@
                                 <label class="form-label fw-bold">Estado Inicial</label>
                                 <select asp-for="Estado" class="form-select">
                                     <option value="Pendiente">Pendiente</option>
-                                 @*    <option value="Completada">Completada</option>
-                                     <option value="Cancelada">Cancelada</option>*@
                                 </select>
                             </div>
 
                             @* Motivo de la Cita *@
                             <div class="col-md-12 mb-3">
                                 <label class="form-label fw-bold">Motivo de la Consulta</label>
-                                <textarea asp-for="Motivo" class="form-control" rows="3" placeholder="Breve descripción del motivo..."></textarea>
+                                <textarea asp-for="Motivo" class="form-control" rows="3" placeholder="" ></textarea>
                                 <span asp-validation-for="Motivo" class="text-danger small"></span>
                             </div>
-             
                         </div>
 
                         <div class="d-flex justify-content-between border-top mt-4 pt-3">
@@ -109,25 +109,15 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
-        // Lógica para sincronizar fechaCita con fechaInicio y fechaFin antes de enviar
-        document.querySelector('form').addEventListener('submit', function() {
-
-            // Capturamos los valores de los inputs visuales
+        document.querySelector('form').addEventListener('submit', function(e) {
             const fechaVal = document.getElementById('fechaSolo').value;
             const horaVal = document.getElementById('horaSolo').value;
 
             if (fechaVal && horaVal) {
-                // Construimos el formato ISO: YYYY-MM-DDTHH:mm:00
+                // Formato ISO: YYYY-MM-DDTHH:mm:00
                 const fechaCompleta = fechaVal + 'T' + horaVal + ':00';
-
-                // Asignamos el valor combinado a todos los campos ocultos necesarios
                 document.getElementById('FechaCitaFull').value = fechaCompleta;
-                document.getElementById('fechaInicio').value = fechaCompleta;
-                document.getElementById('fechaFin').value = fechaCompleta;
-
-  
             }
-
         });
     </script>
 }

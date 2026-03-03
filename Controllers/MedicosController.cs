@@ -1,6 +1,6 @@
-﻿
-using ConsultorioVerde.Web.Models;
+﻿using ConsultorioVerde.Web.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace ConsultorioVerde.Web.Controllers
 {
@@ -12,18 +12,18 @@ namespace ConsultorioVerde.Web.Controllers
         {
             _apiProxy = apiProxy;
         }
+
         [HttpGet]
         public async Task<IActionResult> Index(string buscar, string filtro)
         {
-          
-            // Preparar objeto para el API (basado en el curl que pasaste)
-            var busqueda = new MedicoViewModel {
+            // Preparar objeto para el API
+            var busqueda = new MedicoViewModel
+            {
                 IdMedico = 0,
                 Nombre = "",
                 Apellido = "",
                 FechaCreacion = DateTime.Now,
                 FechaModificacion = DateTime.Now,
-
             };
 
             if (!string.IsNullOrEmpty(buscar))
@@ -33,6 +33,7 @@ namespace ConsultorioVerde.Web.Controllers
                 else if (filtro == "Apellido")
                     busqueda.Apellido = buscar;
             }
+
             // Consumir el API de ListarMedico
             var lista = await _apiProxy.SendRequestAsync<List<MedicoViewModel>>("Medico", "ListarMedico", HttpMethod.Post, busqueda);
 
@@ -43,7 +44,6 @@ namespace ConsultorioVerde.Web.Controllers
             return View(lista ?? new List<MedicoViewModel>());
         }
 
-        // 1. GET: Muestra el formulario en blanco
         [HttpGet]
         public IActionResult Crear()
         {
@@ -58,51 +58,51 @@ namespace ConsultorioVerde.Web.Controllers
             {
                 try
                 {
-                    // Forzamos un formato de fecha que SQL y la API entiendan sin problemas
-                    DateTime fechaLimpia = new DateTime(
-                        DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day,
-                        DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second
-                    );
+                    var usuarioLogueado = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.Identity.Name;
+
+                    // Formato de fecha limpio para evitar conflictos con SQL/API
+                    DateTime fechaActual = DateTime.Now;
 
                     medico.IdMedico = 0;
                     medico.Activo = true;
-                    medico.FechaCreacion = fechaLimpia;
-                    medico.FechaModificacion = fechaLimpia;
-                    medico.UsuarioCreacion = "WebUser";
-                    medico.UsuarioModificacion = "WebUser";
+                    medico.FechaCreacion = fechaActual;
+                    medico.FechaModificacion = fechaActual;
+                    medico.UsuarioCreacion = usuarioLogueado;
+                    medico.UsuarioModificacion = usuarioLogueado;
 
-                    // En el envío, asegúrate de que el nombre del parámetro coincida 
-                    // con lo que espera la API (según el error BadRequest)
                     var respuesta = await _apiProxy.SendRequestAsync<object>("Medico", "InsertarMedico", HttpMethod.Post, medico);
 
                     if (respuesta != null)
                     {
-                        TempData["MensajeExito"] = $"Médico {medico.Nombre} registrado con éxito.";
+                        TempData["MensajeExito"] = $"El Dr. {medico.Nombre} {medico.Apellido} ha sido registrado exitosamente en el sistema.";
                         return RedirectToAction(nameof(Index));
                     }
                 }
                 catch (HttpRequestException ex)
                 {
-                    // Si la API responde con 400, capturamos el detalle aquí
-                    ModelState.AddModelError("", "La API rechazó los datos: " + ex.Message);
+                    TempData["Error"] = "Los datos enviados no cumplen con el formato requerido por el servidor.";
+                    ModelState.AddModelError("", "Error de validación en API: " + ex.Message);
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", "Error inesperado: " + ex.Message);
+                    TempData["Error"] = "Ocurrió un fallo inesperado al intentar registrar al médico.";
+                    ModelState.AddModelError("", "Error: " + ex.Message);
                 }
             }
             return View(medico);
         }
 
-
-        // GET: Medicos/Editar/5
+        [HttpGet]
         public async Task<IActionResult> Editar(int id)
         {
-            // Buscamos al médico en la lista actual de la API
             var medicos = await _apiProxy.SendRequestAsync<List<MedicoViewModel>>("Medico", "ListarMedico", HttpMethod.Post);
             var medico = medicos?.FirstOrDefault(m => m.IdMedico == id);
 
-            if (medico == null) return NotFound();
+            if (medico == null)
+            {
+                TempData["Error"] = "No se encontró el registro del médico solicitado.";
+                return RedirectToAction(nameof(Index));
+            }
 
             return View(medico);
         }
@@ -115,21 +115,22 @@ namespace ConsultorioVerde.Web.Controllers
             {
                 try
                 {
-                    // Mantenemos la auditoría
-                    medico.FechaModificacion = DateTime.Now;
-                    medico.UsuarioModificacion = "WebUser";
+                    var usuarioLogueado = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.Identity.Name;
 
-                    // ¡IMPORTANTE! Usamos HttpMethod.Put según tu curl
+                    medico.FechaModificacion = DateTime.Now;
+                    medico.UsuarioModificacion = usuarioLogueado;
+
                     var respuesta = await _apiProxy.SendRequestAsync<object>("Medico", "ActualizarMedico", HttpMethod.Put, medico);
 
                     if (respuesta != null)
                     {
-                        TempData["MensajeExito"] = $"Los datos de {medico.Nombre} se actualizaron correctamente.";
+                        TempData["MensajeExito"] = $"La información del Dr. {medico.Nombre} ha sido actualizada correctamente.";
                         return RedirectToAction(nameof(Index));
                     }
                 }
                 catch (Exception ex)
                 {
+                    TempData["Error"] = "No se pudieron guardar los cambios realizados.";
                     ModelState.AddModelError("", "Error al actualizar: " + ex.Message);
                 }
             }
@@ -142,29 +143,30 @@ namespace ConsultorioVerde.Web.Controllers
         {
             try
             {
-                // 1. Buscamos al médico actual para tener todos sus datos (la API pide el objeto completo)
+                var usuarioLogueado = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.Identity.Name;
+
                 var medicos = await _apiProxy.SendRequestAsync<List<MedicoViewModel>>("Medico", "ListarMedico", HttpMethod.Post);
                 var medico = medicos?.FirstOrDefault(m => m.IdMedico == id);
 
                 if (medico != null)
                 {
-                    // 2. Cambiamos solo el estado y la auditoría
                     medico.Activo = activo;
                     medico.FechaModificacion = DateTime.Now;
-                    medico.UsuarioModificacion = "WebUser";
+                    medico.UsuarioModificacion = usuarioLogueado;
 
-                    // 3. Enviamos el PUT al endpoint especial
                     var respuesta = await _apiProxy.SendRequestAsync<object>("Medico", "ActualizarEstadoMedico", HttpMethod.Put, medico);
 
                     if (respuesta != null)
                     {
-                        TempData["MensajeExito"] = "El médico ha sido desactivado correctamente.";
+                        TempData["MensajeExito"] = activo
+                            ? $"El Dr. {medico.Nombre} ha sido reactivado en el sistema."
+                            : $"El Dr. {medico.Nombre} ha sido desactivado de la agenda médica.";
                     }
                 }
             }
             catch (Exception ex)
             {
-                TempData["MensajeError"] = "Error al desactivar: " + ex.Message;
+                TempData["Error"] = "Error crítico al intentar cambiar el estado del médico: " + ex.Message;
             }
 
             return RedirectToAction(nameof(Index));
