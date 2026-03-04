@@ -48,42 +48,25 @@ namespace ConsultorioVerde.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult GenerarReporte(int idPaciente)
+        public async Task<IActionResult> GenerarReporte(int idPaciente)
         {
-            if (idPaciente <= 0)
-                return BadRequest("IdPaciente inválido");
+            try
+            {
+                var response = await _apiProxy.GetByteArrayAsync(
+                    "Expediente",
+                    $"GenerarReporte?idPaciente={idPaciente}"
+                );
 
-            // Aquí puedes generar el PDF usando tu servicio backend o algún generador local
-            // Por simplicidad, redirigimos al API que genera el PDF
-            var urlReporte = Url.Action("GenerarReportePDF", "ApiExpediente", new { idPaciente }, Request.Scheme);
-            return Redirect(urlReporte);
+                if (response == null)
+                    return BadRequest("No se pudo generar el reporte.");
+
+                return File(response, "application/pdf", $"Expediente_{idPaciente}.pdf");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error al generar reporte: " + ex.Message);
+            }
         }
 
-        public async Task<IActionResult> ExportarPdf(string identificacion)
-        {
-
-            //const filtroRequest = { Filtro: filtro };
-
-          //await _apiProxy.SendRequestAsync<ExpedienteViewModel>(
-          //       "Expediente",
-          //       "ObtenerExpediente",
-          //       HttpMethod.Post,
-          //       filtroRequest
-          //   );
-
-            //var modelo = await ObtenerExpedienteCompleto(identificacion);
-
-            //if (modelo == null) return NotFound();
-
-            // 2. Retornar la vista como PDF
-            return new ViewAsPdf("VistaReportePdf", "")
-            {
-                FileName = $"Expediente_{identificacion}.pdf",
-                    PageOrientation = Rotativa.AspNetCore.Options.Orientation.Portrait,
-                    //PageSize = Rotativa.AspNetCore.Options.Orientation.Landscape,
-                    CustomSwitches = "--page-offset 0 --footer-center [page]/[toPage] --footer-font-size 9"
-                };
-            }   
-
-}
+    }
 }

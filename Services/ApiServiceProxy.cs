@@ -59,5 +59,20 @@ public class ApiServiceProxy
         throw new HttpRequestException($"Error {response.StatusCode}: {errorContent}");
     }
 
+    public async Task<byte[]> GetByteArrayAsync(string controller, string method)
+    {
+        var url = $"{_baseUrl}{controller}/{method}";
+
+        var response = await _httpClient.GetAsync(url);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorContent = await response.Content.ReadAsStringAsync();
+            throw new HttpRequestException($"Error {response.StatusCode}: {errorContent}");
+        }
+
+        return await response.Content.ReadAsByteArrayAsync();
+    }
+
 
 }
