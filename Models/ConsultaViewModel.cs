@@ -4,7 +4,7 @@
     {
         public int IdConsulta { get; set; }
         public int IdCita { get; set; }
-        public string? Diagnostico { get; set; }
+        public string Diagnostico { get; set; }
         public string? Tratamiento { get; set; }
         public string? Notas { get; set; }
         public DateTime FechaConsulta { get; set; }

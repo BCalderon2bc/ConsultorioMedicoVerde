@@ -39,7 +39,7 @@
             },
             error: function (xhr, status, error) {
                 console.error("Error AJAX:", status, error, xhr.responseText);
-                message.err("Ocurrió un error al obtener el expediente");
+              //  message.err("Ocurrió un error al obtener el expediente");
             }
         });
     });

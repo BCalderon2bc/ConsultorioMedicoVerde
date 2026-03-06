@@ -4,6 +4,19 @@
     ViewData["Title"] = "Gestión de Pacientes";
 }
 
+<style>
+    /* Quitar iconos de validación (check verde) */
+    .form-control.is-valid,
+    .was-validated .form-control:valid,
+    .form-select.is-valid,
+    .was-validated .form-select:valid {
+        background-image: none !important;
+        padding-right: 0.75rem !important;
+        border-color: #dee2e6 !important;
+    }
+
+</style>
+
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="text-verde fw-bold"><i class="bi bi-people-fill me-2"></i>Pacientes</h2>
     <a asp-action="Crear" class="btn btn-verde shadow-sm">

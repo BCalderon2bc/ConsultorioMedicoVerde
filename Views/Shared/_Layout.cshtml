@@ -79,7 +79,6 @@
                     <div class="d-flex align-items-center">
                         <div class="text-end me-3 d-none d-sm-block">
                             <small class="text-muted d-block" style="font-size: 0.7rem;">Sesión iniciada como:</small>
-                            <small class="fw-bold text-dark">@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value</small>
                         </div>
                         <span class="badge bg-success p-2">
                             <i class="bi bi-person-check me-1"></i> @User.Identity.Name

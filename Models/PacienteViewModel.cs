@@ -35,7 +35,7 @@ namespace ConsultorioVerde.Web.Models
         [JsonPropertyName("identificacion")] // Nombre exacto según tu última imagen
         [Display(Name = "Identificación")]
         [StringLength(16)]
-        public string? Identificacion { get; set; }
+        public string Identificacion { get; set; }
 
         [JsonPropertyName("telefono")]
         [Display(Name = "Teléfono")]

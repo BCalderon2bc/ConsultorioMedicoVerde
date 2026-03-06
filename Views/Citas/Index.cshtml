@@ -1,6 +1,18 @@
 ﻿@model IEnumerable<ConsultorioVerde.Web.Models.CitaViewModel>
 
+
 <style>
+    /* Quitar iconos de validación (check verde) */
+    .form-control.is-valid,
+    .was-validated .form-control:valid,
+    .form-select.is-valid,
+    .was-validated .form-select:valid {
+        background-image: none !important;
+        padding-right: 0.75rem !important;
+        border-color: #dee2e6 !important;
+    }
+
+
     .text-verde {
         color: #208b3a;
     }

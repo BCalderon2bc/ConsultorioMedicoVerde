@@ -19,7 +19,8 @@ namespace ConsultorioVerde.Web.Controllers
         }
 
         // GET: Pacientes
-        public async Task<IActionResult> Index(string buscar, string filtro)
+        // GET: Pacientes
+        public async Task<IActionResult> Index(string buscar, string filtro, bool? activos)
         {
             var busqueda = new PacienteViewModel
             {
@@ -40,12 +41,19 @@ namespace ConsultorioVerde.Web.Controllers
 
             ViewBag.Buscar = buscar;
             ViewBag.Filtro = filtro;
+            ViewBag.Activos = activos ?? true; // por defecto true si no viene
 
             var lista = await _apiProxy.SendRequestAsync<List<PacienteViewModel>>("Paciente", "ListarPaciente", HttpMethod.Post, busqueda);
+            lista = lista ?? new List<PacienteViewModel>();
 
-            return View(lista ?? new List<PacienteViewModel>());
+            // Opcional: filtrar en servidor según el switch (activos==true => solo activos)
+            if (activos.HasValue)
+            {
+                lista = lista.Where(p => p.Activo == activos.Value).ToList();
+            }
+
+            return View(lista);
         }
-
         // GET: Pacientes/Crear
         public IActionResult Crear()
         {

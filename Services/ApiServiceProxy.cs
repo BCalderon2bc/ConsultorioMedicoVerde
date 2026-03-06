@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using ConsultorioVerde.Web.Models;
+using System.Net.Http.Json;
 using System.Text.Json;
 
 public class ApiServiceProxy
@@ -73,6 +74,5 @@ public class ApiServiceProxy
 
         return await response.Content.ReadAsByteArrayAsync();
     }
-
 
 }
