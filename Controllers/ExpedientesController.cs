@@ -37,7 +37,7 @@ namespace ConsultorioVerde.Web.Controllers
                 );
 
                 if (resultado == null || resultado.Paciente == null)
-                    return NotFound(new { message = "Paciente no encontrado" });
+                    return Ok(new { paciente = (object)null });
 
                 return Json(resultado);
             }
