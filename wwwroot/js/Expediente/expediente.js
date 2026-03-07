@@ -11,7 +11,7 @@
     ================================== */
     btnBuscar.addEventListener("click", function () {
         const filtro = txtBuscar.value.trim();
-        if (!filtro) return alert("Ingrese un criterio de búsqueda");
+        if (!filtro) return AppMessages.warning("Ingrese un criterio de búsqueda");
 
         const filtroRequest = { Filtro: filtro };
 
@@ -22,7 +22,7 @@
             data: JSON.stringify(filtroRequest),
             success: function (data) {
                 if (!data || !data.paciente) {
-                    message.success("Paciente no encontrado");
+                    AppMessages.warning("Paciente no encontrado");
                     return;
                 }
 
@@ -39,7 +39,7 @@
             },
             error: function (xhr, status, error) {
                 console.error("Error AJAX:", status, error, xhr.responseText);
-              //  message.err("Ocurrió un error al obtener el expediente");
+                AppMessages.error("Ocurrió un error al obtener el expediente");
             }
         });
     });
