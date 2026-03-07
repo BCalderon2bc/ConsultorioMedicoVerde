@@ -21,68 +21,113 @@
     .bg-soft-success {
         background-color: rgba(25, 135, 84, 0.05);
     }
+
+    .btn-verde {
+        background-color: #198754;
+        color: white;
+        border: none;
+    }
+
+        .btn-verde:hover {
+            background-color: #157347;
+            color: white;
+        }
 </style>
 
-<div class="container mt-4">
+<div class="container mt-4 mb-5">
     <div class="row justify-content-center">
-        <div class="col-md-10">
-            <div class="card shadow-lg border-0">
+        <div class="col-lg-10">
+            <div class="card shadow-lg border-0 rounded-xl overflow-hidden">
+                @* Encabezado idéntico al de Pacientes *@
                 <div class="card-header bg-success text-white py-3">
-                    <h5 class="mb-0">
-                        <i class="bi bi-person-plus-fill me-2"></i>Registrar Médico
-                    </h5>
+                    <div class="d-flex align-items-center">
+                        <h5 class="mb-0 fw-bold">
+                            <i class="bi bi-person-badge-fill me-2"></i>Registrar Nuevo Especialista
+                        </h5>
+                    </div>
                 </div>
-                <div class="card-body p-4">
+
+                <div class="card-body p-4 p-lg-5">
                     <form asp-action="Crear" method="post">
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                         <div class="row">
+                            @* --- SECCIÓN 1: INFORMACIÓN PERSONAL --- *@
+                            <div class="col-12 mb-4">
+                                <h6 class="text-success fw-bold text-uppercase small mb-3 border-bottom pb-2">
+                                    <i class="bi bi-info-circle-fill me-2"></i>Información Personal
+                                </h6>
+                            </div>
+
                             <div class="col-md-6 mb-3">
-                                <label asp-for="Nombre" class="form-label fw-bold">Nombre</label>
+                                <label asp-for="Nombre" class="form-label fw-bold">Nombres</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-white border-verde text-success"><i class="bi bi-person"></i></span>
-                                    <input asp-for="Nombre" class="form-control border-verde solo-letras" required />
+                                    <input asp-for="Nombre" class="form-control border-verde solo-letras" placeholder="Ej: Alberto José" required />
                                 </div>
                                 <span asp-validation-for="Nombre" class="text-danger small"></span>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label asp-for="Apellido" class="form-label fw-bold">Apellido</label>
-                                <input asp-for="Apellido" class="form-control border-verde solo-letras" />
+                                <label asp-for="Apellido" class="form-label fw-bold">Apellidos</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-verde text-success"><i class="bi bi-person"></i></span>
+                                    <input asp-for="Apellido" class="form-control border-verde solo-letras" placeholder="Ej: Estrada Vivas" required />
+                                </div>
                                 <span asp-validation-for="Apellido" class="text-danger small"></span>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label asp-for="Especialidad" class="form-label fw-bold">Especialidad</label>
-                                <input asp-for="Especialidad" class="form-control border-verde solo-letras" />
+                                <label asp-for="Telefono" class="form-label fw-bold">Teléfono de Contacto</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-verde text-success"><i class="bi bi-telephone"></i></span>
+                                    <input asp-for="Telefono" class="form-control border-verde telefono-mask" placeholder="8888-8888" />
+                                </div>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label asp-for="NumeroRegistroMINSA" class="form-label fw-bold">Registro MINSA</label>
-                                <input asp-for="NumeroRegistroMINSA" class="form-control border-verde" required />
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="Telefono" class="form-label fw-bold">Teléfono</label>
-                                <input asp-for="Telefono" class="form-control border-verde telefono-mask" />
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="Correo" class="form-label fw-bold">Correo Electrónico</label>
-                                <input asp-for="Correo" class="form-control border-verde correo-valido" />
+                                <label asp-for="Correo" class="form-label fw-bold">Correo Institucional</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-verde text-success"><i class="bi bi-envelope"></i></span>
+                                    <input asp-for="Correo" class="form-control border-verde correo-valido" placeholder="doctor@consultorioverde.com" />
+                                </div>
                                 <span asp-validation-for="Correo" class="text-danger small"></span>
+                            </div>
+
+                            @* --- SECCIÓN 2: DETALLES PROFESIONALES --- *@
+                            <div class="col-12 mt-4 mb-4">
+                                <h6 class="text-success fw-bold text-uppercase small mb-3 border-bottom pb-2">
+                                    <i class="bi bi-mortarboard-fill me-2"></i>Credenciales Profesionales
+                                </h6>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Especialidad" class="form-label fw-bold">Especialidad Médica</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-verde text-success"><i class="bi bi-stethoscope"></i></span>
+                                    <input asp-for="Especialidad" class="form-control border-verde solo-letras" placeholder="Ej: Fisioterapia, Ortopedia..." required />
+                                </div>
+                                <span asp-validation-for="Especialidad" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="NumeroRegistroMINSA" class="form-label fw-bold">Número de Registro MINSA</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-verde text-success"><i class="bi bi-patch-check"></i></span>
+                                    <input asp-for="NumeroRegistroMINSA" class="form-control border-verde" placeholder="Ej: M-12345" required />
+                                </div>
+                                <span asp-validation-for="NumeroRegistroMINSA" class="text-danger small"></span>
                             </div>
                         </div>
 
+                        @* Botonera idéntica a Pacientes *@
                         <div class="border-top mt-4 pt-3 d-flex justify-content-between align-items-center">
-                            <a asp-action="Index" class="btn btn-outline-secondary px-4 me-2">
+                            <a asp-action="Index" class="btn btn-outline-secondary px-4 shadow-sm">
                                 <i class="bi bi-arrow-left me-1"></i>Regresar
                             </a>
-                            <form asp-action="Crear" method="post">
-                                    <button type="submit" class="btn btn-success px-5 shadow">
-                                        <i class="bi bi-save me-1"></i>Guardar Médico
-                                    </button>
-                            </form>
+                            <button type="submit" class="btn btn-success px-5 shadow fw-bold">
+                                <i class="bi bi-save me-1"></i>Guardar Médico
+                            </button>
                         </div>
                     </form>
                 </div>

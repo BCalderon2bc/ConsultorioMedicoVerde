@@ -35,25 +35,39 @@
     });
 
     /* ==========================================
-       MÁSCARA CÉDULA NICARAGÜENSE
-       Formato: 000-000000-0000A
-    ========================================== */
+     MÁSCARA CÉDULA NICARAGÜENSE ESTRICTA
+     Formato: 000-000000-0000A
+  ========================================== */
     document.querySelectorAll(".cedula-ni").forEach(input => {
         input.addEventListener("input", function () {
-            let valor = this.value.replace(/[^0-9a-zA-Z]/g, '').toUpperCase();
-            if (valor.length > 15) valor = valor.substring(0, 15);
+            // 1. Limpiamos el valor de guiones y convertimos a Mayúsculas
+            let valorRaw = this.value.replace(/-/g, '').toUpperCase();
 
+            // 2. Separamos la parte numérica (primeros 13) de la letra (carácter 14)
+            let soloNumeros = valorRaw.substring(0, 13).replace(/\D/g, ''); // \D quita todo lo que NO sea número
+            let soloLetra = valorRaw.substring(13, 14).replace(/[^A-Z]/g, ''); // Solo letras para el final
+
+            let valorSaneado = soloNumeros + soloLetra;
+
+            // 3. Aplicamos el formato con guiones según la longitud
             let formato = "";
-            if (valor.length > 0) formato += valor.substring(0, 3);
-            if (valor.length > 3) formato += "-" + valor.substring(3, 9);
-            if (valor.length > 9) formato += "-" + valor.substring(9, 13);
-            if (valor.length > 13) {
-                let letraFinal = valor.substring(13, 15).replace(/[^A-Z]/g, '');
-                formato += letraFinal;
+            if (valorSaneado.length > 0) {
+                formato += valorSaneado.substring(0, 3);
             }
+            if (valorSaneado.length > 3) {
+                formato += "-" + valorSaneado.substring(3, 9);
+            }
+            if (valorSaneado.length > 9) {
+                formato += "-" + valorSaneado.substring(9, 13);
+            }
+            if (valorSaneado.length > 13) {
+                formato += valorSaneado.substring(13, 14);
+            }
+
             this.value = formato;
         });
 
+        // Manejo de pegado (paste)
         input.addEventListener("paste", function () {
             setTimeout(() => { this.dispatchEvent(new Event('input')); }, 0);
         });
