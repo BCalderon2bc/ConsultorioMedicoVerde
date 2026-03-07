@@ -24,13 +24,16 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label asp-for="Nombre" class="form-label fw-bold">Nombre</label>
-                                <input asp-for="Nombre" class="form-control border-verde solo-letras" required />
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-verde text-success"><i class="bi bi-person"></i></span>
+                                    <input asp-for="Nombre" class="form-control border-verde solo-letras" required />
+                                </div>
                                 <span asp-validation-for="Nombre" class="text-danger small"></span>
                             </div>
 
                             <div class="col-md-6 mb-3">
                                 <label asp-for="Apellido" class="form-label fw-bold">Apellido</label>
-                                <input asp-for="Apellido" class="form-control border-verde solo-letras" required />
+                                <input asp-for="Apellido" class="form-control border-verde solo-letras" />
                                 <span asp-validation-for="Apellido" class="text-danger small"></span>
                             </div>
 
@@ -41,7 +44,7 @@
 
                             <div class="col-md-6 mb-3">
                                 <label asp-for="NumeroRegistroMINSA" class="form-label fw-bold">Registro MINSA</label>
-                                <input asp-for="NumeroRegistroMINSA" class="form-control border-verde" />
+                                <input asp-for="NumeroRegistroMINSA" class="form-control border-verde" required />
                             </div>
 
                             <div class="col-md-6 mb-3">

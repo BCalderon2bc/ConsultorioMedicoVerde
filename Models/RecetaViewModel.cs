@@ -12,7 +12,7 @@ namespace ConsultorioMedicoVerde.Models
 
         [Required(ErrorMessage = "El nombre del medicamento es obligatorio")]
         [StringLength(100, ErrorMessage = "El nombre no puede exceder los 100 caracteres")]
-        public string Medicamento { get; set; }
+        public string? Medicamento { get; set; }
 
         [StringLength(50)]
         public string? Dosis { get; set; }

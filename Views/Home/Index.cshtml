@@ -45,7 +45,7 @@
             <div class="card-body p-4">
                 <div class="d-flex align-items-start justify-content-between">
                     <div>
-                        <p class="text-muted fw-bold small mb-2">PACIENTES TOTALES</p>
+                        <p class="text-muted fw-bold small mb-2">PACIENTES ACTIVOS</p>
                         <h2 class="fw-extrabold mb-0">@Model.TotalPacientes</h2>
                     </div>
                     <div class="bg-success bg-opacity-10 p-3 rounded-circle">
@@ -164,9 +164,7 @@
                                     <i class="bi bi-calendar-x-fill text-muted mb-3 d-block" style="font-size: 3rem; opacity: 0.3;"></i>
                                     <h5 class="text-dark fw-bold">Sin terapias pendientes</h5>
                                     <p class="text-muted">No tienes citas programadas para el resto de hoy.</p>
-                                    <a asp-controller="CitaMedica" asp-action="Crear" class="btn btn-success btn-sm rounded-pill mt-2">
-                                        <i class="bi bi-plus-lg me-1"></i> Agendar nueva terapia
-                                    </a>
+                                   
                                 </div>
                             </td>
                         </tr>

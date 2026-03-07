@@ -1,5 +1,23 @@
 ﻿@model RecetaViewModel
 
+<style>
+    .border-verde {
+        border-color: #198754 !important;
+    }
+
+        .border-verde:focus {
+            border-color: #198754 !important;
+            box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25) !important;
+        }
+
+    .rounded-xl {
+        border-radius: 1rem !important;
+    }
+
+    .bg-soft-success {
+        background-color: rgba(25, 135, 84, 0.05);
+    }
+</style>
 
 <div class="container mt-4">
     <div class="row justify-content-center">
@@ -14,7 +32,7 @@
 
                         <div class="mb-3">
                             <label class="form-label fw-bold">Medicamento</label>
-                            <input asp-for="Medicamento" class="form-control border-success-subtle" required />
+                            <input asp-for="Medicamento" class="form-control border-success-subtle" />
                         </div>
 
                         <div class="row">
@@ -45,3 +63,9 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
