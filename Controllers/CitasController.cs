@@ -2,6 +2,7 @@
 using ConsultorioVerde.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace ConsultorioVerde.Web.Controllers
 {
@@ -81,28 +82,62 @@ namespace ConsultorioVerde.Web.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (citaMedica.FechaCita < DateTime.Now)
+                {
+                    TempData["Warning"] = "No se pueden registrar citas en fechas pasadas.";
+                    await CargarCatalogosCita();
+                    return View("Programar", citaMedica);
+                }
+
                 try
                 {
                     var usuarioLogueado = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.Identity.Name;
                     citaMedica.FechaCreacion = citaMedica.FechaCita;
                     citaMedica.UsuarioCreacion = usuarioLogueado;
 
-                    var respuesta = await _apiProxy.SendRequestAsync<object>("CitaMedica", "InsertarCitaMedica", HttpMethod.Post, citaMedica);
+                    var respuesta = await _apiProxy.SendRequestAsync<ResponseGeneric<bool>>("CitaMedica", "InsertarCitaMedica", HttpMethod.Post, citaMedica);
 
-                    if (respuesta != null)
+                    if (respuesta.Exitoso)
                     {
                         TempData["MensajeExito"] = "La cita médica ha sido programada exitosamente.";
                         return RedirectToAction(nameof(Index));
                     }
+                    else
+                    {
+                        TempData["Error"] = respuesta.Mensaje;
+                    }
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", "Error al conectar con la API: " + ex.Message);
+                    var mensaje = ex.Message;
+
+                    try
+                    {
+                        var inicioJson = mensaje.IndexOf("{");
+                        if (inicioJson >= 0)
+                        {
+                            var json = mensaje.Substring(inicioJson);
+
+                            var error = JsonSerializer.Deserialize<ResponseGeneric<bool>>(json,
+                                new JsonSerializerOptions
+                                {
+                                    PropertyNameCaseInsensitive = true
+                                });
+
+                            if (error != null)
+                                mensaje = error.Mensaje;
+                        }
+                    }
+                    catch
+                    {
+                        // Si no se puede deserializar dejamos el mensaje original
+                    }
+                    TempData["Warning"] = mensaje;
                 }
             }
 
             await CargarCatalogosCita();
-            return View(citaMedica);
+            return View("Programar", citaMedica);
         }
 
         [HttpGet]

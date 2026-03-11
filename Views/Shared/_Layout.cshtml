@@ -169,7 +169,20 @@
                     confirmButtonColor: '#d33', // Rojo para alertas de error
                     confirmButtonText: 'Entendido'
                 });
-            }   
+            }
+
+            // 5. Mensaje de advertencia (WARNING)
+            var mensajeWarning = @Json.Serialize(TempData["Warning"]);
+            if (mensajeWarning && mensajeWarning !== '') {
+                Swal.fire({
+                    title: 'Advertencia',
+                    text: mensajeWarning,
+                    icon: 'warning',
+                    confirmButtonColor: '#f0ad4e'
+                });
+            }
+
+
         });
     </script>
 

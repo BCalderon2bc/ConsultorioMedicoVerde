@@ -1,4 +1,5 @@
-﻿using ConsultorioVerde.Web.Models;
+﻿using ConsultorioMedicoVerde.Models;
+using ConsultorioVerde.Web.Models;
 using System.Net.Http.Json;
 using System.Text.Json;
 
@@ -20,44 +21,44 @@ public class ApiServiceProxy
         var url = $"{_baseUrl}{controller}/{method}";
         HttpResponseMessage response;
 
-        if (httpMethod == HttpMethod.Get)   
-        {
+        if (httpMethod == HttpMethod.Get)
             response = await _httpClient.GetAsync(url);
-        }
         else if (httpMethod == HttpMethod.Post)
-        {
             response = await _httpClient.PostAsJsonAsync(url, data ?? new { });
-        }
         else if (httpMethod == HttpMethod.Put)
-        {
             response = await _httpClient.PutAsJsonAsync(url, data ?? new { });
-        }
         else if (httpMethod == HttpMethod.Delete)
-        {
             response = await _httpClient.DeleteAsync(url);
-        }
         else
-        {
             throw new NotImplementedException("Método HTTP no soportado.");
-        }
 
-        // Dentro de SendRequestAsync
         var options = new JsonSerializerOptions
         {
-            PropertyNameCaseInsensitive = true,
-            // Esto ayuda a evitar conflictos con propiedades de solo lectura
-            IgnoreReadOnlyProperties = false
+            PropertyNameCaseInsensitive = true
         };
 
         if (response.IsSuccessStatusCode)
         {
-            var datos = await response.Content.ReadFromJsonAsync<T>(options);
-            return datos;
+            return await response.Content.ReadFromJsonAsync<T>(options);
         }
 
-        // Si da error (como el 405 que tenías), lanzamos una excepción detallada
         var errorContent = await response.Content.ReadAsStringAsync();
-        throw new HttpRequestException($"Error {response.StatusCode}: {errorContent}");
+
+        try
+        {
+            var error = JsonSerializer.Deserialize<ResponseGeneric<object>>(errorContent, options);
+
+            if (error != null && !string.IsNullOrEmpty(error.Mensaje))
+            {
+                throw new Exception(error.Mensaje);
+            }
+        }
+        catch
+        {
+            // Si no viene en formato ResponseGeneric
+        }
+
+        throw new Exception(errorContent);
     }
 
     public async Task<byte[]> GetByteArrayAsync(string controller, string method)
