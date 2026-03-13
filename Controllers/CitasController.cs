@@ -95,7 +95,7 @@ namespace ConsultorioVerde.Web.Controllers
                     citaMedica.FechaCreacion = citaMedica.FechaCita;
                     citaMedica.UsuarioCreacion = usuarioLogueado;
 
-                    var respuesta = await _apiProxy.SendRequestAsync<ResponseGeneric<bool>>("CitaMedica", "InsertarCitaMedica", HttpMethod.Post, citaMedica);
+                    var respuesta = await _apiProxy.SendRequestAsync<ResponseGeneric<object>>("CitaMedica", "InsertarCitaMedica", HttpMethod.Post, citaMedica);
 
                     if (respuesta.Exitoso)
                     {
@@ -104,35 +104,13 @@ namespace ConsultorioVerde.Web.Controllers
                     }
                     else
                     {
-                        TempData["Error"] = respuesta.Mensaje;
+                        TempData["Warning"] = respuesta.Mensaje;
                     }
                 }
                 catch (Exception ex)
                 {
-                    var mensaje = ex.Message;
-
-                    try
-                    {
-                        var inicioJson = mensaje.IndexOf("{");
-                        if (inicioJson >= 0)
-                        {
-                            var json = mensaje.Substring(inicioJson);
-
-                            var error = JsonSerializer.Deserialize<ResponseGeneric<bool>>(json,
-                                new JsonSerializerOptions
-                                {
-                                    PropertyNameCaseInsensitive = true
-                                });
-
-                            if (error != null)
-                                mensaje = error.Mensaje;
-                        }
-                    }
-                    catch
-                    {
-                        // Si no se puede deserializar dejamos el mensaje original
-                    }
-                    TempData["Warning"] = mensaje;
+                    TempData["Error"] = "Fallo de comunicación con el servidor al intentar programar la cita.";
+                    ModelState.AddModelError("", ex.Message);
                 }
             }
 

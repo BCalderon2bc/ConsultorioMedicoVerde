@@ -1,4 +1,5 @@
-﻿using ConsultorioVerde.Web.Models;
+﻿using ConsultorioMedicoVerde.Models;
+using ConsultorioVerde.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -75,13 +76,18 @@ namespace ConsultorioVerde.Web.Controllers
                     paciente.FechaCreacion = DateTime.Now;
                     paciente.UsuarioCreacion = idUsuarioLogueado;
 
-                    var respuesta = await _apiProxy.SendRequestAsync<RespuestaConsultaPaciente>("Paciente", "InsertarPaciente", HttpMethod.Post, paciente);
+                    var respuesta = await _apiProxy.SendRequestAsync<ResponseGeneric<RespuestaConsultaPaciente>>(
+                        "Paciente",
+                        "InsertarPaciente",
+                        HttpMethod.Post,
+                        paciente
+                    );
 
-                    if (respuesta != null)
+                    if (respuesta.Exitoso)
                     {
-                        int idNuevoPaciente = respuesta.idPaciente;
+                        int idNuevoPaciente = respuesta.Data.idPaciente;
 
-                        // Verificamos si hay datos de historial para insertar
+                        // Insertar historial si existe información
                         if (!string.IsNullOrWhiteSpace(paciente.Alergias)
                             || !string.IsNullOrWhiteSpace(paciente.EnfermedadesPrevias)
                             || !string.IsNullOrWhiteSpace(paciente.CirugiasPrevias)
@@ -98,11 +104,20 @@ namespace ConsultorioVerde.Web.Controllers
                                 usuarioCreacion = idUsuarioLogueado
                             };
 
-                            await _apiProxy.SendRequestAsync<object>("HistorialMedico", "InsertarHistorialMedico", HttpMethod.Post, historialApi);
+                            await _apiProxy.SendRequestAsync<object>(
+                                "HistorialMedico",
+                                "InsertarHistorialMedico",
+                                HttpMethod.Post,
+                                historialApi
+                            );
                         }
 
                         TempData["MensajeExito"] = $"Paciente '{paciente.Nombre} {paciente.Apellido}' registrado exitosamente.";
                         return RedirectToAction("Index");
+                    }
+                    else
+                    {
+                        TempData["Warning"] = respuesta.Mensaje;
                     }
                 }
                 catch (Exception ex)
