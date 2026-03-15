@@ -157,12 +157,16 @@ namespace ConsultorioVerde.Web.Controllers
                     paciente.FechaModificacion = DateTime.Now;
                     paciente.UsuarioModificacion = idUsuarioLogueado;
 
-                    var respuesta = await _apiProxy.SendRequestAsync<object>("Paciente", "ActualizarPaciente", HttpMethod.Put, paciente);
+                    var respuesta = await _apiProxy.SendRequestAsync<ResponseGeneric<object>>("Paciente", "ActualizarPaciente", HttpMethod.Put, paciente);
 
-                    if (respuesta != null)
+                    if (respuesta.Data != null)
                     {
                         TempData["MensajeExito"] = $"Los datos de '{paciente.Nombre} {paciente.Apellido}' han sido actualizados correctamente.";
                         return RedirectToAction(nameof(Index));
+                    }
+                    else
+                    {
+                        TempData["Warning"] = respuesta?.Mensaje;
                     }
                 }
                 catch (Exception ex)
