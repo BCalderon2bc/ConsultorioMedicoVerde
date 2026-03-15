@@ -68,10 +68,14 @@ namespace ConsultorioVerde.Web.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (paciente.FechaNacimiento > DateTime.Now)
+                {
+                    TempData["Warning"] = "La fecha de nacimiento no puede ser una fecha futura.";
+                    return View(paciente);
+                }
                 try
                 {
                     var idUsuarioLogueado = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.Identity.Name;
-
                     paciente.Activo = true;
                     paciente.FechaCreacion = DateTime.Now;
                     paciente.UsuarioCreacion = idUsuarioLogueado;
@@ -150,6 +154,11 @@ namespace ConsultorioVerde.Web.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (paciente.FechaNacimiento > DateTime.Now)
+                {
+                    TempData["Warning"] = "La fecha de nacimiento no puede ser una fecha futura.";
+                    return View(paciente);
+                }
                 try
                 {
                     var idUsuarioLogueado = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.Identity.Name;

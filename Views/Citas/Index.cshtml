@@ -72,8 +72,9 @@
                     <label class="form-label fw-bold text-muted label-filter">FECHA INICIO:</label>
                     <div class="input-group">
                         <span class="input-group-text bg-white"><i class="bi bi-calendar-range text-success"></i></span>
-                        <input type="date" name="fechaInicio" class="form-control border-start-0 border-verde-subtle"
-                               value="@ViewBag.FechaInicio"> @* <-- Aquí se setea *@
+                        <input type="date" id="fechaInicio" name="fechaInicio" class="form-control border-start-0 border-verde-subtle"
+                               value="@ViewBag.FechaInicio"
+                               max="@DateTime.Now.ToString("yyyy-MM-dd")"> @* <-- Aquí se setea *@
                     </div>
                 </div>
 
@@ -81,8 +82,9 @@
                     <label class="form-label fw-bold text-muted label-filter">FECHA FIN:</label>
                     <div class="input-group">
                         <span class="input-group-text bg-white"><i class="bi bi-calendar-range-fill text-success"></i></span>
-                        <input type="date" name="fechaFin" class="form-control border-start-0 border-verde-subtle"
-                               value="@ViewBag.FechaFin"> @* <-- Aquí se setea *@
+                        <input type="date" id="fechaFin" name="fechaFin" class="form-control border-start-0 border-verde-subtle"
+                               value="@ViewBag.FechaFin"
+                               max="@DateTime.Now.ToString("yyyy-MM-dd")">
                     </div>
                 </div>
 
@@ -191,3 +193,13 @@
         </table>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            if (typeof FiltroFechas !== 'undefined') {
+                FiltroFechas.init("fechaInicio", "fechaFin");
+            }
+        });
+    </script>
+}
