@@ -73,8 +73,7 @@
                     <div class="input-group">
                         <span class="input-group-text bg-white"><i class="bi bi-calendar-range text-success"></i></span>
                         <input type="date" id="fechaInicio" name="fechaInicio" class="form-control border-start-0 border-verde-subtle"
-                               value="@ViewBag.FechaInicio"
-                               max="@DateTime.Now.ToString("yyyy-MM-dd")"> @* <-- Aquí se setea *@
+                               value="@ViewBag.FechaInicio">
                     </div>
                 </div>
 
@@ -83,8 +82,7 @@
                     <div class="input-group">
                         <span class="input-group-text bg-white"><i class="bi bi-calendar-range-fill text-success"></i></span>
                         <input type="date" id="fechaFin" name="fechaFin" class="form-control border-start-0 border-verde-subtle"
-                               value="@ViewBag.FechaFin"
-                               max="@DateTime.Now.ToString("yyyy-MM-dd")">
+                               value="@ViewBag.FechaFin">
                     </div>
                 </div>
 
@@ -121,8 +119,18 @@
                 {
                     @foreach (var item in Model)
                     {
+                        // Lógica de validación
+                        // Estados que bloquean cualquier acción futura
                         bool esFinalizada = item.Estado?.ToLower() == "completada" || item.Estado?.ToLower() == "cancelada";
-                        string claseDeshabilitado = esFinalizada ? "disabled opacity-50" : "";
+                        //Determinar si la cita es hoy, pasado o futuro
+                        bool esFechaPasada = item.FechaCita.HasValue && item.FechaCita.Value.Date < DateTime.Today;
+                        bool esHoy = item.FechaCita.HasValue && item.FechaCita.Value.Date == DateTime.Today;
+                        //EDITAR: Se puede editar si NO está finalizada Y NO es del pasado
+                        bool noEditable = esFinalizada || esFechaPasada;
+                        string claseEditar = noEditable ? "disabled opacity-50" : "";
+                        //ATENDER: Solo si es HOY y está PENDIENTE
+                        bool puedeAtender = esHoy && item.Estado?.ToLower() == "pendiente";
+                        string claseAtender = puedeAtender ? "" : "disabled opacity-50";
 
                         <tr>
                             <td class="fw-bold ps-4">
@@ -152,7 +160,7 @@
                                 <div class="btn-group shadow-sm">
                                     <a asp-action="Editar"
                                        asp-route-id="@item.IdCita"
-                                       class="btn btn-sm btn-outline-primary @claseDeshabilitado"
+                                       class="btn btn-sm btn-outline-primary @claseEditar"
                                        title="Editar Cita">
                                         <i class="bi bi-pencil"></i>
                                     </a>
@@ -169,7 +177,7 @@
                                         {
                                             <a asp-action="Atender"
                                                asp-route-id="@item.IdCita"
-                                               class="btn btn-sm btn-success text-white @claseDeshabilitado"
+                                               class="btn btn-sm btn-success text-white @claseAtender"
                                                title="Atender Paciente">
                                                 <i class="bi bi-stethoscope me-1"></i> Atender
                                             </a>

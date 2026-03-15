@@ -2,25 +2,24 @@
     init: function (idInicio, idFin) {
         const inputInicio = document.getElementById(idInicio);
         const inputFin = document.getElementById(idFin);
-        const hoy = new Date().toISOString().split('T')[0];
 
         if (!inputInicio || !inputFin) return;
 
         const sincronizar = () => {
-            // La fecha inicio no puede superar a la fecha fin actual
+            // Fecha Inicio no supere a Fecha Fin
             if (inputFin.value) {
                 inputInicio.max = inputFin.value;
             } else {
-                inputInicio.max = hoy;
+                // Si no hay fecha fin, el inicio es libre
+                inputInicio.removeAttribute("max");
             }
 
-            // La fecha fin no puede ser anterior a la fecha inicio actual
+            // Y que Fin no sea menor que Inicio
             if (inputInicio.value) {
                 inputFin.min = inputInicio.value;
+            } else {
+                inputFin.removeAttribute("min");
             }
-
-            // Ambas siempre limitadas por el día de hoy
-            inputFin.max = hoy;
         };
 
         inputFin.addEventListener("change", () => {
